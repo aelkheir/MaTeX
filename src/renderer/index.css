@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 103 80 164;
+    --color-on-primary: 255 255 255;
+    --color-primary-container: 234 221 255;
+    --color-on-primary-container: 33 0 93;
+    --color-secondary: 98 91 113;
+    --color-on-secondary: 255 255 255;
+    --color-secondary-container: 232 222 248;
+    --color-on-secondary-container: 29 25 43;
+    --color-tertiary: 125 82 96;
+    --color-on-tertiary: 255 255 255;
+    --color-tertiary-container: 255 216 228;
+    --color-on-tertiary-container: 49 17 29;
+    --color-error: 179 38 30;
+    --color-on-error: 255 255 255;
+    --color-error-container: 249 222 220;
+    --color-on-error-container: 65 14 11;
+    --color-outline: 121 116 126;
+    --color-background: 255 251 254;
+    --color-on-background: 28 27 31;
+    --color-surface: 255 251 254;
+    --color-on-surface: 28 27 31;
+    --color-surface-variant: 231 224 236;
+    --color-on-surface-variant: 73 69 79;
+    --color-inverse-surface: 49 48 51;
+    --color-inverse-on-surface: 244 239 244;
+    --color-inverse-primary: 208 188 255;
+    --color-shadow: 0 0 0;
+    --color-surface-tint: 103 80 164;
+    --color-outline-variant: 202 196 208;
+    --color-scrim: 0 0 0;
+
+    --color-ref-primary-0: 0 0 0;
+    --color-ref-primary-10: 33 0 93;
+    --color-ref-primary-20: 56 30 114;
+    --color-ref-primary-30: 79 55 139;
+    --color-ref-primary-40: 103 80 164;
+    --color-ref-primary-50: 127 103 190;
+    --color-ref-primary-60: 154 130 219;
+    --color-ref-primary-70: 182 157 248;
+    --color-ref-primary-80: 208 188 255;
+    --color-ref-primary-90: 234 221 255;
+    --color-ref-primary-95: 246 237 255;
+    --color-ref-primary-99: 255 251 254;
+    --color-ref-primary-100: 255 255 255;
+
+    --color-ref-neutral-80: 201 197 202;
+  }
+
+  .dark {
+    --color-primary: 208 188 255;
+    --color-on-primary: 56 30 114;
+    --color-primary-container: 79 55 139;
+    --color-on-primary-container: 234 221 255;
+    --color-secondary: 204 194 220;
+    --color-on-secondary: 51 45 65;
+    --color-secondary-container: 74 68 88;
+    --color-on-secondary-container: 232 222 248;
+    --color-tertiary: 239 184 200;
+    --color-on-tertiary: 73 37 50;
+    --color-tertiary-container: 99 59 72;
+    --color-on-tertiary-container: 255 216 228;
+    --color-error: 242 184 181;
+    --color-on-error: 96 20 16;
+    --color-error-container: 140 29 24;
+    --color-on-error-container: 249 222 220;
+    --color-outline: 147 143 153;
+    --color-background: 28 27 31;
+    --color-on-background: 230 225 229;
+    --color-surface: 28 27 31;
+    --color-on-surface: 230 225 229;
+    --color-surface-variant: 73 69 79;
+    --color-on-surface-variant: 202 196 208;
+    --color-inverse-surface: 230 225 229;
+    --color-inverse-on-surface: 49 48 51;
+    --color-inverse-primary: 103 80 164;
+    --color-shadow: 0 0 0;
+    --color-surface-tint: 208 188 255;
+    --color-outline-variant: 73 69 79;
+    --color-scrim: 0 0 0;
+  }
+
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+  }
+
+  #root {
+    height: 100%;
+    width: 100%;
+  }
+}
