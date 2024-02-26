@@ -109,7 +109,7 @@ export const UnitList = () => {
           <EditCourse course={course} key={"edit-" + String(course.id)} />
           <DeleteCourse key={"delete-" + String(course.id)} />
         </div>
-        <div className="grow overflow-y-auto scrollbar-thin scrollbar-thumb-ref-neutral-80 px-4 space-y-1 scroll-smooth">
+        <div className="grow overflow-y-auto px-4 scroll-smooth flex flex-col gap-1">
           {course.units.map((unit) => (
             <TipTapNav
               unit={unit}
@@ -118,8 +118,8 @@ export const UnitList = () => {
               to={`units/${unit.id}`}
             />
           ))}
+          <div className="sticky h-10 shrink-0 bottom-0 left-0 right-0 bg-gradient-to-t from-ref-primary-40 pointer-events-none"></div>
         </div>
-        <div className="sticky bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-ref-primary-40 pointer-events-none"></div>
         <button
           className="w-full h-16 shrink-0 flex items-center justify-center px-4"
           onClick={() => {
@@ -526,7 +526,7 @@ const TipTapNav: React.FC<{
     editable: false,
     editorProps: {
       attributes: {
-        class: "h-full flex items-center p-3 outline-none",
+        class: "h-full flex items-center px-3 py-[10px] outline-none",
       },
     },
     extensions: [
@@ -553,9 +553,20 @@ const TipTapNav: React.FC<{
       id={`u-${unit.id}`}
       draggable={false}
       to={to}
-      className={`w-full flex items-center text-ref-neutral-80`}
+      className={({ isActive }) =>
+        `w-full flex items-center text-ref-neutral-80 focus:outline-none focus-visible:ring-2 ring-inset ring-white ${
+          isActive
+            ? "bg-ref-primary-40 sticky z-10 top-0 bottom-0 left-0 text-ref-primary-100"
+            : " text-ref-neutral-80"
+        }`
+      }
     >
-      {() => <EditorContent editor={editor} className={`h-full w-full`} />}
+      {({ isActive }) => (
+        <EditorContent
+          editor={editor}
+          className={`h-full w-full ${isActive ? "bg-white/10" : ""}`}
+        />
+      )}
     </NavLink>
   );
 };
