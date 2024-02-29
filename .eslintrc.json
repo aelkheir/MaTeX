@@ -15,7 +15,8 @@
     "plugin:react/jsx-runtime"
   ],
   "rules": {
-    "no-case-declarations": "off"
+    "no-case-declarations": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
   },
   "plugins": ["react"],
   "parser": "@typescript-eslint/parser"

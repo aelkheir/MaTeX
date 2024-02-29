@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   BaseEntity,
   OneToMany,
+  ManyToOne,
 } from "typeorm";
+import { Level } from "./Level";
 import { Unit } from "./Unit";
 
 @Entity("courses")
@@ -17,4 +19,7 @@ export class Course extends BaseEntity {
 
   @OneToMany(() => Unit, (unit) => unit.course)
   units: Unit[];
+
+  @ManyToOne(() => Level, (level) => level.courses, { onDelete: "SET NULL" })
+  level: Level;
 }

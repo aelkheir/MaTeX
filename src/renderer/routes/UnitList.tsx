@@ -8,11 +8,12 @@ import {
   To,
   redirect,
   useLoaderData,
+  useNavigate,
   useParams,
   useSubmit,
 } from "react-router-dom";
 import { LabelLarge } from "../components/text/LabelLarge";
-import { Course, Unit } from "../../main/entities";
+import { Course, Level, Unit } from "../../main/entities";
 import { EditorContent, generateText, useEditor } from "@tiptap/react";
 import { InlineLatex } from "../components/tiptap/LatexNode";
 import { Document } from "@tiptap/extension-document";
@@ -30,8 +31,14 @@ import {
   ModalOverlay,
   TextField,
   Text as RACText,
+  ComboBox,
+  Group,
+  Popover,
+  ListBox,
+  ListBoxItem,
 } from "react-aria-components";
 import {
+  ChevronUpDownIcon,
   ClipboardIcon,
   PencilIcon,
   PlusIcon,
@@ -43,7 +50,8 @@ import * as yup from "yup";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const course = await window.electron.fetchCourse(+params.courseId);
-  return { course };
+  const levels = await window.electron.fetchLevels();
+  return { course, levels };
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -60,11 +68,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
       await window.electron.editCourse({
         id: Number(params.courseId),
         name: String(updates.name),
+        levelName: String(updates.levelName).trim(),
       });
       return null;
     case "DELETE":
       await window.electron.deleteCourse(Number(params.courseId));
-      return redirect(String(updates.redirectTo));
+      return redirect("/courses");
   }
   return null;
 }
@@ -99,27 +108,38 @@ const schema = yup.object({
 });
 
 export const UnitList = () => {
-  const { course } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
+  const { course, levels } = useLoaderData() as Awaited<
+    ReturnType<typeof loader>
+  >;
+  const navigate = useNavigate();
 
   return (
     <>
       <div className="col-start-1 row-start-2 bg-ref-primary-40 flex flex-col rounded-br-md">
         <div className="w-full h-6 shrink-0 flex items-center justify-between px-4 mb-1">
-          <AddUnit />
-          <EditCourse course={course} key={"edit-" + String(course.id)} />
+          <AddUnit key={course.units.length + 1} />
+          <EditCourse
+            course={course}
+            levels={levels}
+            key={"edit-" + String(course.id)}
+          />
           <DeleteCourse key={"delete-" + String(course.id)} />
         </div>
-        <div className="grow overflow-y-auto px-4 scroll-smooth flex flex-col gap-1">
-          {course.units.map((unit) => (
-            <TipTapNav
-              unit={unit}
-              key={unit.id}
-              json={unit.name}
-              to={`units/${unit.id}`}
-            />
-          ))}
-          <div className="sticky h-10 shrink-0 bottom-0 left-0 right-0 bg-gradient-to-t from-ref-primary-40 pointer-events-none"></div>
-        </div>
+        <ListBox
+          aria-label="Units list"
+          selectionMode="single"
+          disallowEmptySelection={true}
+          items={course.units}
+          onSelectionChange={(keys) => {
+            const currentKey = Array.from(keys)[0];
+            currentKey && navigate(`units/${currentKey}`);
+          }}
+          className={
+            "grow overflow-y-auto px-4 scroll-smooth flex flex-col gap-1 scroll-py-20"
+          }
+        >
+          {(unit) => <TipTapNav unit={unit} key={unit.id} />}
+        </ListBox>
         <button
           className="w-full h-16 shrink-0 flex items-center justify-center px-4"
           onClick={() => {
@@ -365,10 +385,17 @@ const DeleteCourse = () => {
   );
 };
 
-const EditCourse = ({ course }: { course: Course }) => {
+const EditCourse = ({
+  course,
+  levels,
+}: {
+  course: Course;
+  levels: Level[];
+}) => {
   const { handleSubmit, control } = useForm({
     defaultValues: {
       name: course.name,
+      levelName: course.level ? course.level.name : "",
     },
   });
   const submit = useSubmit();
@@ -406,44 +433,63 @@ const EditCourse = ({ course }: { course: Course }) => {
                   })}
                   className="mt-2"
                 >
-                  <Controller
-                    control={control}
+                  <TextField
                     name="name"
-                    rules={{
-                      required: "Name is required",
-                      minLength: {
-                        value: 5,
-                        message: "Minimum length is 5 characters.",
-                      },
-                    }}
-                    render={({
-                      field: { name, value, onChange, onBlur, ref },
-                      fieldState: { invalid, error },
-                    }) => (
-                      <TextField
-                        name={name}
-                        value={value}
-                        defaultValue={course.name}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                        autoFocus
-                        isRequired
-                        // // Let React Hook Form handle validation instead of the browser.
-                        validationBehavior="aria"
-                        isInvalid={invalid}
-                        className={"flex flex-col"}
-                      >
-                        <Label>Name</Label>
-                        <Input
-                          ref={ref}
-                          className={
-                            "p-2 bg-gray-300 grow outline-none border-b-2 border-transparent focus:border-primary"
-                          }
-                        />
-                        <FieldError>{error?.message}</FieldError>
-                      </TextField>
-                    )}
-                  />
+                    defaultValue={course.name}
+                    autoFocus
+                    isRequired
+                    minLength={5}
+                    className={"flex flex-col"}
+                  >
+                    <Label>Name</Label>
+                    <Input
+                      className={
+                        "p-2 bg-gray-300 grow outline-none border-b-2 border-transparent focus:border-primary text-sm"
+                      }
+                    />
+                    <FieldError />
+                  </TextField>
+                  <ComboBox
+                    name="levelName"
+                    formValue="text"
+                    defaultInputValue={course.level ? course.level.name : ""}
+                    defaultSelectedKey={course.level ? course.level.id : ""}
+                    allowsCustomValue
+                    className={"flex flex-col"}
+                  >
+                    <Label>Level</Label>
+                    <Group className="flex items-center p-2 bg-gray-300 grow outline-none border-b-2 border-transparent focus-within:border-primary bg-black/10">
+                      <Input
+                        placeholder="no level selected"
+                        className={
+                          "grow border-none bg-transparent outline-none text-sm placeholder:italic"
+                        }
+                      />
+                      <Button>
+                        <ChevronUpDownIcon className="h-6 w-6 text-gray-700" />
+                      </Button>
+                    </Group>
+                    <Popover
+                      className={"w-72 group ring-1 ring-black/10 bg-white"}
+                    >
+                      <ListBox items={levels}>
+                        {(item) => (
+                          <ListBoxItem
+                            id={String(item.id)}
+                            textValue={item.name}
+                            className={
+                              "h-8 text-sm group flex items-center gap-2 cursor-default select-none py-1 px-4 outline-none text-gray-900 focus:bg-black/5 focus:text-black"
+                            }
+                          >
+                            <span className="flex-1 flex items-center gap-2 truncate font-normal group-selected:font-medium">
+                              {item.name}
+                            </span>
+                          </ListBoxItem>
+                        )}
+                      </ListBox>
+                    </Popover>
+                    <FieldError />
+                  </ComboBox>
                   <div className="mt-6 flex justify-end gap-2">
                     <Button
                       onPress={close}
@@ -517,56 +563,44 @@ export const TipTapInput = ({
   );
 };
 
-const TipTapNav: React.FC<{
-  json: string;
-  to: To;
-  unit: Unit;
-}> = ({ json, to, unit }) => {
-  const editor = useEditor({
-    editable: false,
-    editorProps: {
-      attributes: {
-        class: "h-full flex items-center px-3 py-[10px] outline-none",
-      },
-    },
-    extensions: [
-      Document.extend({
-        content: "block",
-      }),
-      Text,
-      Paragraph.configure({
-        HTMLAttributes: {
-          class: "h-full text-sm ltr:tracking-[0.25px] font-normal",
+const TipTapNav = ({ unit }: { unit: Unit }) => {
+  const editor = useEditor(
+    {
+      editable: false,
+      editorProps: {
+        attributes: {
+          class: "h-full flex items-center px-3 py-[10px] outline-none",
         },
-      }),
-      InlineLatex,
-    ],
-    content: JSON.parse(json),
-  });
-
-  useEffect(() => {
-    editor?.commands.setContent(JSON.parse(json));
-  }, [json]);
+      },
+      extensions: [
+        Document.extend({
+          content: "block",
+        }),
+        Text,
+        Paragraph.configure({
+          HTMLAttributes: {
+            class: "h-full text-sm ltr:tracking-[0.25px] font-normal",
+          },
+        }),
+        InlineLatex,
+      ],
+      content: JSON.parse(unit.name),
+    },
+    [unit.name]
+  );
 
   return (
-    <NavLink
-      id={`u-${unit.id}`}
-      draggable={false}
-      to={to}
-      className={({ isActive }) =>
-        `w-full flex items-center text-ref-neutral-80 focus:outline-none focus-visible:ring-2 ring-inset ring-white ${
-          isActive
-            ? "bg-ref-primary-40 sticky z-10 top-0 bottom-0 left-0 text-ref-primary-100"
-            : " text-ref-neutral-80"
-        }`
-      }
+    <ListBoxItem
+      id={unit.id}
+      textValue={editor ? editor.getText() : unit.name}
+      className={`w-full flex items-center text-ref-neutral-80 focus:outline-none focus-visible:ring-2 ring-inset ring-white selected:bg-ref-primary-40 selected:sticky selected:z-10 selected:top-0 selected:bottom-0 left-0 selected:text-ref-primary-100`}
     >
-      {({ isActive }) => (
+      {({ isSelected }) => (
         <EditorContent
           editor={editor}
-          className={`h-full w-full ${isActive ? "bg-white/10" : ""}`}
+          className={`h-full w-full ${isSelected ? "bg-white/10" : ""}`}
         />
       )}
-    </NavLink>
+    </ListBoxItem>
   );
 };

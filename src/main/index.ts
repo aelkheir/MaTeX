@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { app, BrowserWindow } from "electron";
 import path from "path";
-import { Unit, Lesson, Question, Course } from "./entities";
+import { Unit, Lesson, Question, Course, Level } from "./entities";
 import { DataSource } from "typeorm";
 import { setupAPI } from "./api";
 
@@ -17,7 +17,7 @@ const dbPath = app.isPackaged
 const AppDataSource = new DataSource({
   type: "sqlite",
   database: dbPath,
-  entities: [Course, Unit, Lesson, Question],
+  entities: [Level, Course, Unit, Lesson, Question],
   synchronize: true,
   logging: false,
 });

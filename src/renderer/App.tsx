@@ -13,7 +13,16 @@ import {
   loader as unitListLoader,
   action as unitListAction,
 } from "./routes/UnitList";
-import { LessonList, loader as lessonListLoader } from "./routes/LessonList";
+import {
+  LessonList,
+  loader as lessonListLoader,
+  action as lessonListAction,
+} from "./routes/LessonList";
+import {
+  QuestionList,
+  loader as questionListLoader,
+  action as questionListAction,
+} from "./routes/QuestionList";
 
 const router = createMemoryRouter(
   [
@@ -47,6 +56,16 @@ const router = createMemoryRouter(
                   element: <LessonList />,
                   errorElement: <Error />,
                   loader: lessonListLoader,
+                  action: lessonListAction,
+                  children: [
+                    {
+                      path: "lessons/:lessonId",
+                      element: <QuestionList />,
+                      errorElement: <Error />,
+                      loader: questionListLoader,
+                      action: questionListAction,
+                    },
+                  ],
                 },
               ],
             },

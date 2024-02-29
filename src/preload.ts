@@ -2,21 +2,32 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge, ipcRenderer } from "electron";
-import { Course, Lesson, Question, Unit } from "./main/entities";
+import { Course, Lesson, Level, Question, Unit } from "./main/entities";
 
 export type Channels = "ipc-example";
 
 const electronHandler = {
+  fetchLevels(): Promise<Level[]> {
+    return ipcRenderer.invoke("fetch-levels");
+  },
+  deleteLevel(levelId: number | string): Promise<unknown> {
+    return ipcRenderer.invoke("delete-level", levelId);
+  },
+  editLevel(level: Pick<Level, "id" | "name">): Promise<Unit> {
+    return ipcRenderer.invoke("edit-level", level);
+  },
   fetchCourses(): Promise<Course[]> {
     return ipcRenderer.invoke("fetch-courses");
   },
   fetchCourse(courseId: number): Promise<Course> {
     return ipcRenderer.invoke("fetch-course", courseId);
   },
-  addCourse(courseName: string): Promise<Course> {
-    return ipcRenderer.invoke("add-course", courseName);
+  addCourse(args: { name: string; levelName: string }): Promise<Course> {
+    return ipcRenderer.invoke("add-course", args);
   },
-  editCourse(course: Pick<Course, "id" | "name">): Promise<Unit> {
+  editCourse(
+    course: Pick<Course, "id" | "name"> & { levelName: string }
+  ): Promise<Unit> {
     return ipcRenderer.invoke("edit-course", course);
   },
   deleteCourse(courseId: number | string): Promise<unknown> {
@@ -31,7 +42,7 @@ const electronHandler = {
   addUnit(courseId: number, unitName: string): Promise<Unit> {
     return ipcRenderer.invoke("add-unit", courseId, unitName);
   },
-  editUnit(unit: Unit): Promise<Unit> {
+  editUnit(unit: Pick<Unit, "id" | "name">): Promise<Unit> {
     return ipcRenderer.invoke("edit-unit", unit);
   },
   deleteUnit(unitId: number | string): Promise<unknown> {
@@ -43,7 +54,7 @@ const electronHandler = {
   fetchLesson(lessonId: number): Promise<Lesson> {
     return ipcRenderer.invoke("fetch-lesson", lessonId);
   },
-  editLesson(lesson: Lesson): Promise<Lesson> {
+  editLesson(lesson: Pick<Lesson, "id" | "name">): Promise<Lesson> {
     return ipcRenderer.invoke("edit-lesson", lesson);
   },
   deleteLesson(lessonId: number | string): Promise<unknown> {
