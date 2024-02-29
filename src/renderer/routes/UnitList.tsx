@@ -1,11 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   ActionFunctionArgs,
   Form,
   LoaderFunctionArgs,
-  NavLink,
   Outlet,
-  To,
   redirect,
   useLoaderData,
   useNavigate,
@@ -392,7 +390,7 @@ const EditCourse = ({
   course: Course;
   levels: Level[];
 }) => {
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit } = useForm({
     defaultValues: {
       name: course.name,
       levelName: course.level ? course.level.name : "",
@@ -593,14 +591,9 @@ const TipTapNav = ({ unit }: { unit: Unit }) => {
     <ListBoxItem
       id={unit.id}
       textValue={editor ? editor.getText() : unit.name}
-      className={`w-full flex items-center text-ref-neutral-80 focus:outline-none focus-visible:ring-2 ring-inset ring-white selected:bg-ref-primary-40 selected:sticky selected:z-10 selected:top-0 selected:bottom-0 left-0 selected:text-ref-primary-100`}
+      className={`w-full flex items-center text-ref-neutral-80 focus:outline-none focus-visible:ring-2 ring-inset ring-white selected:bg-white/10 selected:sticky selected:z-10 selected:top-0 selected:bottom-0 left-0 selected:text-ref-primary-100`}
     >
-      {({ isSelected }) => (
-        <EditorContent
-          editor={editor}
-          className={`h-full w-full ${isSelected ? "bg-white/10" : ""}`}
-        />
-      )}
+      <EditorContent editor={editor} className={`h-full w-full`} />
     </ListBoxItem>
   );
 };

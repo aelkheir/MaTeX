@@ -3,11 +3,10 @@ import {
   ActionFunctionArgs,
   Form,
   LoaderFunctionArgs,
-  NavLink,
   Outlet,
   redirect,
-  To,
   useLoaderData,
+  useNavigate,
   useSubmit,
 } from "react-router-dom";
 import { useEditor, EditorContent, generateText } from "@tiptap/react";
@@ -19,7 +18,6 @@ import {
   Lesson as LessonModel,
   Unit,
 } from "../../main/entities";
-import { useHover } from "react-aria";
 import { InlineLatex } from "../components/tiptap/LatexNode";
 import {
   Button,
@@ -34,6 +32,8 @@ import {
   Popover,
   TextField,
   Text as RACText,
+  ListBoxItem,
+  ListBox,
 } from "react-aria-components";
 import {
   ClipboardIcon,
@@ -78,6 +78,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export const LessonList = () => {
   const { unit } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
+  const navigate = useNavigate();
 
   return (
     <>
@@ -92,18 +93,21 @@ export const LessonList = () => {
             <div className="w-full h-6 shrink-0 flex items-center justify-between px-4 mb-1">
               <AddLesson key={unit.lessons.length + 1} />
             </div>
-            <div className="px-4 grow relative overflow-y-auto scroll-smooth flex flex-col gap-1">
-              {unit.lessons?.map((lesson) => (
-                <TipTapNav
-                  key={lesson.id}
-                  json={lesson.name}
-                  to={`lessons/${lesson.id}`}
-                  lesson={lesson}
-                />
-              ))}
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-surface z-[5] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-primary/5 z-[8] pointer-events-none" />
+            <ListBox
+              aria-label="Lessons list"
+              selectionMode="single"
+              disallowEmptySelection={true}
+              items={unit.lessons}
+              onSelectionChange={(keys) => {
+                const currentKey = Array.from(keys)[0];
+                currentKey && navigate(`lessons/${currentKey}`);
+              }}
+              className={
+                "px-4 grow relative overflow-y-auto scroll-smooth flex flex-col gap-1"
+              }
+            >
+              {(lesson) => <TipTapNav lesson={lesson} key={lesson.id} />}
+            </ListBox>
           </div>
         </div>
       </div>
@@ -600,56 +604,39 @@ const AddLesson = () => {
   );
 };
 
-const TipTapNav: React.FC<{
-  json: string;
-  to: To;
-  lesson: LessonModel;
-}> = ({ json, to, lesson }) => {
-  const editor = useEditor({
-    editable: false,
-    editorProps: {
-      attributes: {
-        class: "h-full flex items-center px-3 py-[10px] outline-none",
-      },
-    },
-    extensions: [
-      Document.extend({
-        content: "block",
-      }),
-      Text,
-      Paragraph.configure({
-        HTMLAttributes: {
-          class: "h-full text-sm ltr:tracking-[0.25px] font-normal",
+const TipTapNav = ({ lesson }: { lesson: LessonModel }) => {
+  const editor = useEditor(
+    {
+      editable: false,
+      editorProps: {
+        attributes: {
+          class: "h-full flex items-center px-3 py-[10px] outline-none",
         },
-      }),
-      InlineLatex,
-    ],
-    content: JSON.parse(json),
-  });
-
-  useEffect(() => {
-    editor?.commands.setContent(JSON.parse(json));
-  }, [json]);
+      },
+      extensions: [
+        Document.extend({
+          content: "block",
+        }),
+        Text,
+        Paragraph.configure({
+          HTMLAttributes: {
+            class: "h-full text-sm ltr:tracking-[0.25px] font-normal",
+          },
+        }),
+        InlineLatex,
+      ],
+      content: JSON.parse(lesson.name),
+    },
+    [lesson.name]
+  );
 
   return (
-    <NavLink
-      id={`l-${lesson.id}`}
-      draggable={false}
-      to={to}
-      className={({ isActive }) =>
-        `w-full flex items-center focus:outline-none focus-visible:ring-2 ring-inset ring-outline ${
-          isActive ? "text-on-surface" : "text-outline"
-        }`
-      }
+    <ListBoxItem
+      id={lesson.id}
+      textValue={editor ? editor.getText() : lesson.name}
+      className={`w-full flex items-center text-outline focus:outline-none focus-visible:ring-2 ring-inset ring-outline selected:bg-black/5 selected:sticky selected:z-10 selected:top-0 selected:bottom-0 left-0 selected:text-on-surface`}
     >
-      {({ isActive }) => (
-        <EditorContent
-          editor={editor}
-          className={`h-full w-full ${
-            isActive ? "bg-black bg-opacity-10" : ""
-          }`}
-        />
-      )}
-    </NavLink>
+      <EditorContent editor={editor} className={`h-full w-full`} />
+    </ListBoxItem>
   );
 };

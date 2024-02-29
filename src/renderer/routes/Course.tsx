@@ -135,7 +135,7 @@ const LevelsPopover = ({ levels }: { levels: Level[] }) => {
           className="outline-none text-gray-700 w-full flex flex-col gap-1"
           aria-label="Level"
         >
-          {({ close }) => {
+          {() => {
             return levels.length ? (
               levels.map((level) => (
                 <div
@@ -438,7 +438,7 @@ const DeleteLevel = ({ level }: { level: Level }) => {
 };
 
 const EditLevel = ({ level }: { level: Level }) => {
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit } = useForm({
     defaultValues: {
       name: level.name,
     },
