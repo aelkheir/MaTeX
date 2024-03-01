@@ -224,7 +224,7 @@ const EditUnit = ({
     <DialogTrigger>
       <Button
         aria-label="Edit unit"
-        className={`flex items-center py-1 px-2 pressed:bg-black/5 focus-visible:bg-black/5`}
+        className={`flex items-center text-sm py-1 px-2 pressed:bg-black/5 focus-visible:bg-black/5`}
       >
         Edit Unit
       </Button>
@@ -384,7 +384,7 @@ const DeleteUnit = ({
     <DialogTrigger>
       <Button
         aria-label="Delete unit"
-        className={`flex items-center py-1 px-2 pressed:bg-black/5 focus-visible:bg-black/5`}
+        className={`flex items-center  text-sm py-1 px-2 pressed:bg-black/5 focus-visible:bg-black/5`}
       >
         Delete Unit
       </Button>
