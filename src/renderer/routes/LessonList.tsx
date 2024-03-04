@@ -103,7 +103,7 @@ export const LessonList = () => {
                 currentKey && navigate(`lessons/${currentKey}`);
               }}
               className={
-                "px-4 grow relative overflow-y-auto scroll-smooth flex flex-col gap-1"
+                "px-4 grow overflow-y-auto scroll-smooth flex flex-col gap-1"
               }
             >
               {(lesson) => <TipTapNav lesson={lesson} key={lesson.id} />}

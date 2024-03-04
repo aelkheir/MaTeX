@@ -95,4 +95,21 @@
     height: 100%;
     width: 100%;
   }
+
+  .tiptap ol {
+    list-style: lower-latin;
+  }
+
+  .tiptap ol ol {
+    list-style: decimal;
+  }
+
+  .tiptap ol ol ol {
+    list-style: lower-roman;
+  }
+
+  .tiptap table {
+    border-collapse: collapse;
+    counter-reset: rowNumber;
+  }
 }

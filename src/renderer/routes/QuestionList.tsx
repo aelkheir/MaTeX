@@ -149,10 +149,6 @@ export const QuestionList = () => {
             <EditLesson key={lesson.id} lesson={lesson} />
             <DeleteLesson key={"delete-" + String(lesson.id)} />
           </div>
-
-          {/* Edit Lesson Modal */}
-
-          {/* Delete Lesson Modal */}
         </div>
         <div className="w-full h-12 shrink-0 flex items-center px-4 mb-1">
           <Link

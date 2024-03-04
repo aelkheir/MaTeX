@@ -1,5 +1,3 @@
-import "tailwindcss/tailwind.css";
-import "katex/dist/katex.min.css";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { Root } from "./routes/Root";
 import Error from "./routes/Error";
@@ -23,6 +21,11 @@ import {
   loader as questionListLoader,
   action as questionListAction,
 } from "./routes/QuestionList";
+import {
+  Question,
+  loader as questionLoader,
+  action as questionAction,
+} from "./routes/Question";
 
 const router = createMemoryRouter(
   [
@@ -64,6 +67,19 @@ const router = createMemoryRouter(
                       errorElement: <Error />,
                       loader: questionListLoader,
                       action: questionListAction,
+                    },
+                    {
+                      path: "lessons/:lessonId/questions",
+                      errorElement: <Error />,
+                      children: [
+                        {
+                          path: ":questionId",
+                          element: <Question />,
+                          errorElement: <Error />,
+                          loader: questionLoader,
+                          action: questionAction,
+                        },
+                      ],
                     },
                   ],
                 },

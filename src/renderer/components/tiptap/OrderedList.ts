@@ -1,5 +1,5 @@
-import { wrappingInputRule } from '@tiptap/core';
-import { OrderedList as TOrderedList } from '@tiptap/extension-ordered-list';
+import { wrappingInputRule } from "@tiptap/core";
+import { OrderedList as TOrderedList } from "@tiptap/extension-ordered-list";
 
 const inputRegex = /^\s*(\d+)\.\s$/;
 export const OrderedList = TOrderedList.extend({
@@ -15,11 +15,11 @@ export const OrderedList = TOrderedList.extend({
         keepMarks: this.options.keepMarks,
         keepAttributes: this.options.keepAttributes,
         getAttributes: () => {
-          return this.editor.getAttributes('textStyle');
+          return this.editor.getAttributes("textStyle");
         },
         editor: this.editor,
       });
     }
     return [inputRule];
   },
-});
+}).configure({ HTMLAttributes: { class: "tiptap" } });
