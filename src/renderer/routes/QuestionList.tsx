@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActionFunctionArgs,
   Form,
@@ -28,7 +28,6 @@ import { TableHeader } from "@tiptap/extension-table-header";
 import { Lesson, Question } from "../../main/entities";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import { useElementScrollRestoration } from "../hooks/useElementScrollRestoration";
-import { LabelLarge } from "../components/text/LabelLarge";
 import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
 import { Controller, RefCallBack, useForm } from "react-hook-form";
 import {
@@ -145,13 +144,13 @@ export const QuestionList = () => {
           <DeleteLesson key={"delete-" + String(lesson.id)} />
         </div>
       </div>
-      <div className="w-full h-12 shrink-0 flex items-center px-4 mb-1">
+      <div className="w-full h-6 shrink-0 flex items-center px-4 mb-1">
         <Link
           to={"questions/new"}
-          className="w-full h-full px-2 flex items-center space-x-2"
+          className="h-full px-2 flex items-center text-on-surface text-xs font-normal ltr:tracking-[0.1px] cursor-default"
         >
-          <PlusIcon className="text-on-surface w-6 h-6" />
-          <LabelLarge color="text-on-surface">Add Quesion</LabelLarge>
+          <PlusIcon className="w-4 h-4 mr-2 text-inherit" />
+          Add Quesion
         </Link>
       </div>
       <div id={`questions-list`} ref={listRef} className="relative grow ">
@@ -268,10 +267,6 @@ const TipTapNav: React.FC<ListChildComponentProps<Question[]>> = ({
     },
     []
   );
-
-  if (editor) {
-    console.log(editor.getHTML());
-  }
 
   return (
     <>

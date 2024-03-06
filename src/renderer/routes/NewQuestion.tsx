@@ -1,39 +1,36 @@
+import React, { useRef, useState } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { EditorContent, useEditor, generateText } from "@tiptap/react";
-import { useRef, useState } from "react";
-import { useForm, Controller, RefCallBack } from "react-hook-form";
 import {
   ActionFunctionArgs,
   Form,
   Link,
-  LoaderFunctionArgs,
   redirect,
-  useLoaderData,
   useNavigate,
   useParams,
   useSubmit,
 } from "react-router-dom";
+import { EditorContent, generateText, useEditor } from "@tiptap/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Document } from "@tiptap/extension-document";
 import { Text } from "@tiptap/extension-text";
-import { HardBreak } from "@tiptap/extension-hard-break";
 import { Paragraph } from "@tiptap/extension-paragraph";
 import { History } from "@tiptap/extension-history";
+import { HardBreak } from "@tiptap/extension-hard-break";
 import { ListItem } from "@tiptap/extension-list-item";
-import Focus from "@tiptap/extension-focus";
 import { Gapcursor } from "@tiptap/extension-gapcursor";
+import Focus from "@tiptap/extension-focus";
 import { Bold } from "@tiptap/extension-bold";
 import { Italic } from "@tiptap/extension-italic";
 import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
+import { Controller, RefCallBack, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { Question as QuestionModel } from "../../main/entities";
 import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
-import { FieldError, Input, TextField } from "react-aria-components";
-import { LabelLarge } from "../components/text/LabelLarge";
 import { OrderedList } from "../components/tiptap/OrderedList";
+import { Button, FieldError, Input, TextField } from "react-aria-components";
+import { LabelLarge } from "../components/text/LabelLarge";
 import { Menu } from "../components/tiptap/Menu";
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -41,45 +38,33 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const updates = Object.fromEntries(formData);
   switch (request.method) {
     case "POST":
-      const question = await window.electron.editQuestion({
-        id: Number(params.questionId),
-        text: updates.editorContent,
-      } as QuestionModel);
-      return redirect(
-        `/units/${params.unitId}/lessons/${params.lessonId}/#q-${question.id}`
+      const question = await window.electron.addQuestion(
+        Number(params.lessonId),
+        String(updates.editorContent)
       );
-    case "DELETE":
-      await window.electron.deleteQuestion(Number(updates.questionId));
-      return redirect(`/units/${params.unitId}/lessons/${params.lessonId}`);
+      return redirect(
+        `/courses/${params.courseId}/units/${params.unitId}/lessons/${params.lessonId}/#q-${question.id}`
+      );
   }
   return null;
 }
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const question = await window.electron.fetchQuestion(
-    Number(params.questionId)
-  );
-  return { question };
-}
-
-export const Question = () => {
-  const { question } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
-
+export const NewQuestion = () => {
   return (
     <div className="w-full h-full col-start-3 row-start-1 row-span-2 flex flex-col bg-background">
       <div className="w-full h-16 shrink-0 flex items-center justify-between px-4 text-on-surface">
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 ">
           <Link
-            to={`../../#q-${question.id}`}
+            to={`../../`}
             relative="path"
-            preventScrollReset={true}
             className="flex justify-center items-start p-1"
+            aria-label="Navigate Back"
           >
             <ArrowLeftIcon className="w-6 h-6" />
           </Link>
         </div>
       </div>
-      <EditQuestionForm question={question} />
+      <NewQuestionForm />
     </div>
   );
 };
@@ -121,26 +106,26 @@ const schema = yup.object({
   }),
 });
 
-const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
+const NewQuestionForm: React.FC = () => {
+  const params = useParams();
+  const submit = useSubmit();
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      editorContent: question.text,
+      editorContent: "",
     },
     resolver: yupResolver(schema),
   });
-  const submit = useSubmit();
+
   const formRef = useRef<HTMLFormElement>(null);
 
   const onSubmit = () => {
-    if (formRef.current) {
-      submit(formRef.current, {
-        method: "POST",
-      });
-    }
+    submit(formRef.current, {
+      method: "POST",
+    });
   };
 
   return (
@@ -149,7 +134,6 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
       onSubmit={handleSubmit(onSubmit)}
       className="w-full grow flex flex-col"
     >
-      {/* @ts-ignore */}
       <Controller
         name="editorContent"
         control={control}
@@ -158,10 +142,9 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
           fieldState: { invalid, error },
         }) => (
           <TextField
-            aria-label="Question content"
             name={name}
+            aria-label="Question content"
             value={value}
-            defaultValue={question.text}
             onChange={onChange}
             onBlur={onBlur}
             autoFocus
@@ -173,6 +156,7 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
           >
             <TipTap content={value} onChange={onChange} contentRef={ref} />
             <Input ref={ref} hidden />
+
             <FieldError className={"px-4 shrink-0 text-xs"}>
               {error?.message}
             </FieldError>
@@ -180,44 +164,29 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
         )}
       />
       <div>
-        <div className="px-8 shrink-0 w-full text-error">
-          {errors.editorContent?.message}
-        </div>
-        <div className="h-16 px-8 shrink-0 w-full flex justify-between items-center space-x-2">
+        <div className="h-16 px-8 shrink-0 w-full flex justify-end items-center">
           <div className="h-full flex items-center">
-            <span className="bg-surface">
-              <button
-                type="button"
-                className="py-3 px-4 text-on-surface flex justify-center items-center"
-              >
-                <LabelLarge>Delete</LabelLarge>
-              </button>
-            </span>
-          </div>
-          <div className="h-full flex items-center">
-            <span className="bg-surface">
-              <button
-                type="button"
-                className="py-3 px-4 text-on-surface bg-primary/[12%] flex justify-center items-center"
-                onClick={() => handleSubmit(onSubmit)()}
-              >
-                <LabelLarge>Save</LabelLarge>
-              </button>
-            </span>
-            <span className="bg-surface">
+            <span className="bg-surface mr-2">
               <Link
-                to={`../../#q-${question.id}`}
+                to={`../..`}
                 relative="path"
                 className="py-3 px-4  text-on-surface flex justify-center items-center"
               >
                 <LabelLarge>Discard</LabelLarge>
               </Link>
             </span>
+            <span className="bg-surface">
+              <Button
+                type="submit"
+                className="py-3 px-4 text-on-surface bg-primary/[12%] flex justify-center items-center"
+                onPress={() => handleSubmit(onSubmit)()}
+              >
+                Save
+              </Button>
+            </span>
           </div>
         </div>
       </div>
-
-      {/* Delete Modal */}
     </Form>
   );
 };
@@ -287,7 +256,7 @@ const TipTap = ({
       }),
       Focus.configure({
         className: "ring-[1px] ring-primary",
-        mode: "deepest",
+        mode: "all",
       }),
       ListItem,
       Gapcursor,
@@ -304,6 +273,7 @@ const TipTap = ({
     editor?.chain().focus("end").run();
     setPrevEditor(editor);
   }
+
   return (
     <>
       <div className="w-full h-12 shrink-0 flex flex-wrap items-center space-x-1 px-4 bg-black/[1%] p-1">
@@ -316,7 +286,7 @@ const TipTap = ({
           className="p-4 text-on-background absolute inset-0 "
           onKeyDown={(e) => {
             if (e.key === "Escape") {
-              navigate(`../../#q-${params.questionId}`, { relative: "path" });
+              navigate(`../../`, { relative: "path" });
             }
           }}
         />

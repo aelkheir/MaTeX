@@ -26,6 +26,7 @@ import {
   loader as questionLoader,
   action as questionAction,
 } from "./routes/Question";
+import { NewQuestion, action as newQuestionAction } from "./routes/NewQuestion";
 
 const router = createMemoryRouter(
   [
@@ -78,6 +79,12 @@ const router = createMemoryRouter(
                           errorElement: <Error />,
                           loader: questionLoader,
                           action: questionAction,
+                        },
+                        {
+                          path: "new",
+                          element: <NewQuestion />,
+                          errorElement: <Error />,
+                          action: newQuestionAction,
                         },
                       ],
                     },
