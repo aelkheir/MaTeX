@@ -1,13 +1,19 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { EditorContent, useEditor, generateText } from "@tiptap/react";
 import { useRef, useState } from "react";
-import { useForm, Controller, RefCallBack } from "react-hook-form";
+import {
+  useForm,
+  Controller,
+  RefCallBack,
+  UseFormGetValues,
+} from "react-hook-form";
 import {
   ActionFunctionArgs,
   Form,
   Link,
   LoaderFunctionArgs,
   redirect,
+  useBlocker,
   useLoaderData,
   useNavigate,
   useParams,
@@ -134,11 +140,7 @@ const schema = yup.object({
 });
 
 const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, getValues } = useForm({
     defaultValues: {
       editorContent: question.text,
     },
@@ -181,16 +183,13 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
           >
             <TipTap content={value} onChange={onChange} contentRef={ref} />
             <Input ref={ref} hidden />
-            <FieldError className={"px-4 shrink-0 text-xs"}>
+            <FieldError className={"px-4 shrink-0 text-sm"}>
               {error?.message}
             </FieldError>
           </TextField>
         )}
       />
       <div>
-        <div className="px-8 shrink-0 w-full text-error">
-          {errors.editorContent?.message}
-        </div>
         <div className="h-16 px-8 shrink-0 w-full flex justify-between items-center space-x-2">
           <div className="h-full flex items-center">
             <span className="bg-surface">
@@ -219,8 +218,71 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
         </div>
       </div>
 
-      {/* Delete Modal */}
+      <EditBlocker getValues={getValues} question={question} />
     </Form>
+  );
+};
+
+const EditBlocker = ({
+  getValues,
+  question,
+}: {
+  getValues: UseFormGetValues<{
+    editorContent?: string;
+  }>;
+  question: QuestionModel;
+}) => {
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    let shouldBlock = false;
+    const editorContent = getValues().editorContent;
+    if (getValues().editorContent !== "") {
+      shouldBlock = editorContent !== question.text;
+    }
+    return shouldBlock && currentLocation.pathname !== nextLocation.pathname;
+  });
+  return (
+    <ModalOverlay
+      isOpen={blocker.state === "blocked"}
+      className={`
+          fixed inset-0 z-10 overflow-y-auto bg-black/25 flex min-h-full items-center justify-center p-4`}
+    >
+      <Modal
+        isOpen={blocker.state === "blocked"}
+        className={`w-full max-w-md overflow-hidden bg-white p-6 text-left align-middle`}
+      >
+        <Dialog role="dialog" className="outline-none relative">
+          {({ close }) => (
+            <>
+              <Heading
+                slot="title"
+                className="text-xxl font-semibold leading-6 my-0 text-slate-700"
+              >
+                Discard Changes
+              </Heading>
+              <div className="mt-2">
+                <div className="mt-6 flex justify-end gap-2">
+                  <Button
+                    onPress={() => {
+                      blocker.reset();
+                      close();
+                    }}
+                    className={`inline-flex justify-center border border-solid border-transparent px-5 py-2 font-semibold font-[inherit] text-base transition-colors cursor-default outline-none focus-visible:ring-2 ring-blue-500 ring-offset-2 bg-slate-200 text-slate-800 hover:border-slate-300 pressed:bg-slate-300`}
+                  >
+                    Continue Editing
+                  </Button>
+                  <Button
+                    onPress={blocker.proceed}
+                    className={`inline-flex justify-center border border-solid border-transparent px-5 py-2 font-semibold font-[inherit] text-base transition-colors cursor-default outline-none focus-visible:ring-2 ring-blue-500 ring-offset-2 bg-red-500 text-white hover:border-red-600 pressed:bg-red-600`}
+                  >
+                    Discard
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 };
 

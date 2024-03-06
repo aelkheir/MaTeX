@@ -5,8 +5,8 @@ import {
   Form,
   Link,
   redirect,
+  useBlocker,
   useNavigate,
-  useParams,
   useSubmit,
 } from "react-router-dom";
 import { EditorContent, generateText, useEditor } from "@tiptap/react";
@@ -25,11 +25,25 @@ import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
-import { Controller, RefCallBack, useForm } from "react-hook-form";
+import {
+  Controller,
+  RefCallBack,
+  UseFormGetValues,
+  useForm,
+} from "react-hook-form";
 import * as yup from "yup";
 import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
 import { OrderedList } from "../components/tiptap/OrderedList";
-import { Button, FieldError, Input, TextField } from "react-aria-components";
+import {
+  Button,
+  Dialog,
+  FieldError,
+  Heading,
+  Input,
+  Modal,
+  ModalOverlay,
+  TextField,
+} from "react-aria-components";
 import { LabelLarge } from "../components/text/LabelLarge";
 import { Menu } from "../components/tiptap/Menu";
 
@@ -107,13 +121,8 @@ const schema = yup.object({
 });
 
 const NewQuestionForm: React.FC = () => {
-  const params = useParams();
   const submit = useSubmit();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, getValues } = useForm({
     defaultValues: {
       editorContent: "",
     },
@@ -153,7 +162,7 @@ const NewQuestionForm: React.FC = () => {
             <TipTap content={value} onChange={onChange} contentRef={ref} />
             <Input ref={ref} hidden />
 
-            <FieldError className={"px-4 shrink-0 text-xs"}>
+            <FieldError className={"px-4 shrink-0 text-sm"}>
               {error?.message}
             </FieldError>
           </TextField>
@@ -182,6 +191,7 @@ const NewQuestionForm: React.FC = () => {
           </div>
         </div>
       </div>
+      <EditBlocker getValues={getValues} />
     </Form>
   );
 };
@@ -196,7 +206,6 @@ const TipTap = ({
   contentRef: RefCallBack;
 }) => {
   const navigate = useNavigate();
-  const params = useParams();
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -287,5 +296,82 @@ const TipTap = ({
         />
       </div>
     </>
+  );
+};
+
+const EditBlocker = ({
+  getValues,
+}: {
+  getValues: UseFormGetValues<{
+    editorContent?: string;
+  }>;
+}) => {
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    let editorContent = getValues().editorContent;
+    if (getValues().editorContent !== "") {
+      editorContent = generateText(JSON.parse(editorContent), [
+        Document,
+        Text,
+        HardBreak,
+        InlineLatex,
+        DisplayLatex,
+        Bold,
+        Italic,
+        Paragraph,
+        OrderedList,
+        ListItem,
+        Table,
+        TableRow,
+        TableCell,
+        TableHeader,
+      ]);
+    }
+    return (
+      editorContent !== "" && currentLocation.pathname !== nextLocation.pathname
+    );
+  });
+  return (
+    <ModalOverlay
+      isOpen={blocker.state === "blocked"}
+      className={`
+          fixed inset-0 z-10 overflow-y-auto bg-black/25 flex min-h-full items-center justify-center p-4`}
+    >
+      <Modal
+        isOpen={blocker.state === "blocked"}
+        className={`w-full max-w-md overflow-hidden bg-white p-6 text-left align-middle`}
+      >
+        <Dialog role="dialog" className="outline-none relative">
+          {({ close }) => (
+            <>
+              <Heading
+                slot="title"
+                className="text-xxl font-semibold leading-6 my-0 text-slate-700"
+              >
+                Discard Changes
+              </Heading>
+              <div className="mt-2">
+                <div className="mt-6 flex justify-end gap-2">
+                  <Button
+                    onPress={() => {
+                      blocker.reset();
+                      close();
+                    }}
+                    className={`inline-flex justify-center border border-solid border-transparent px-5 py-2 font-semibold font-[inherit] text-base transition-colors cursor-default outline-none focus-visible:ring-2 ring-blue-500 ring-offset-2 bg-slate-200 text-slate-800 hover:border-slate-300 pressed:bg-slate-300`}
+                  >
+                    Continue Editing
+                  </Button>
+                  <Button
+                    onPress={blocker.proceed}
+                    className={`inline-flex justify-center border border-solid border-transparent px-5 py-2 font-semibold font-[inherit] text-base transition-colors cursor-default outline-none focus-visible:ring-2 ring-blue-500 ring-offset-2 bg-red-500 text-white hover:border-red-600 pressed:bg-red-600`}
+                  >
+                    Discard
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 };
