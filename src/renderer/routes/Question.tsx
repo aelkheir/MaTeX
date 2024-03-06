@@ -31,7 +31,17 @@ import { TableHeader } from "@tiptap/extension-table-header";
 import * as yup from "yup";
 import { Question as QuestionModel } from "../../main/entities";
 import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
-import { FieldError, Input, TextField } from "react-aria-components";
+import {
+  Button,
+  Dialog,
+  DialogTrigger,
+  FieldError,
+  Heading,
+  Input,
+  Modal,
+  ModalOverlay,
+  TextField,
+} from "react-aria-components";
 import { LabelLarge } from "../components/text/LabelLarge";
 import { OrderedList } from "../components/tiptap/OrderedList";
 import { Menu } from "../components/tiptap/Menu";
@@ -46,11 +56,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
         text: updates.editorContent,
       } as QuestionModel);
       return redirect(
-        `/units/${params.unitId}/lessons/${params.lessonId}/#q-${question.id}`
+        `/courses/${params.courseId}/units/${params.unitId}/lessons/${params.lessonId}/#q-${question.id}`
       );
     case "DELETE":
       await window.electron.deleteQuestion(Number(updates.questionId));
-      return redirect(`/units/${params.unitId}/lessons/${params.lessonId}`);
+      return redirect(
+        `/courses/${params.courseId}/units/${params.unitId}/lessons/${params.lessonId}`
+      );
   }
   return null;
 }
@@ -144,11 +156,7 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
   };
 
   return (
-    <Form
-      ref={formRef}
-      onSubmit={handleSubmit(onSubmit)}
-      className="w-full grow flex flex-col"
-    >
+    <Form ref={formRef} className="w-full grow flex flex-col">
       {/* @ts-ignore */}
       <Controller
         name="editorContent"
@@ -186,32 +194,26 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
         <div className="h-16 px-8 shrink-0 w-full flex justify-between items-center space-x-2">
           <div className="h-full flex items-center">
             <span className="bg-surface">
-              <button
-                type="button"
-                className="py-3 px-4 text-on-surface flex justify-center items-center"
-              >
-                <LabelLarge>Delete</LabelLarge>
-              </button>
+              <DeleteQuestion question={question} />
             </span>
           </div>
           <div className="h-full flex items-center">
-            <span className="bg-surface">
-              <button
-                type="button"
-                className="py-3 px-4 text-on-surface bg-primary/[12%] flex justify-center items-center"
-                onClick={() => handleSubmit(onSubmit)()}
-              >
-                <LabelLarge>Save</LabelLarge>
-              </button>
-            </span>
-            <span className="bg-surface">
+            <span className="bg-surface mr-2">
               <Link
-                to={`../../#q-${question.id}`}
+                to={`../../`}
                 relative="path"
                 className="py-3 px-4  text-on-surface flex justify-center items-center"
               >
                 <LabelLarge>Discard</LabelLarge>
               </Link>
+            </span>
+            <span className="bg-surface">
+              <Button
+                className="py-3 px-4 text-on-surface bg-primary/[12%] flex justify-center items-center"
+                onPress={() => handleSubmit(onSubmit)()}
+              >
+                Save
+              </Button>
             </span>
           </div>
         </div>
@@ -219,6 +221,63 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
 
       {/* Delete Modal */}
     </Form>
+  );
+};
+
+const DeleteQuestion = ({ question }: { question: QuestionModel }) => {
+  const submit = useSubmit();
+  const handleDelete = () => {
+    const formData = new FormData();
+    formData.append("questionId", String(question.id));
+    submit(formData, { method: "DELETE" });
+  };
+
+  return (
+    <DialogTrigger>
+      <Button
+        type="button"
+        className="py-3 px-4 text-on-surface flex justify-center items-center font-normal"
+      >
+        Delete
+      </Button>
+      <ModalOverlay
+        className={`
+          fixed inset-0 z-10 overflow-y-auto bg-black/25 flex min-h-full items-center justify-center p-4`}
+      >
+        <Modal
+          className={`w-full max-w-md overflow-hidden bg-white p-6 text-left align-middle`}
+        >
+          <Dialog role="dialog" className="outline-none relative">
+            {({ close }) => (
+              <>
+                <Heading
+                  slot="title"
+                  className="text-xxl font-semibold leading-6 my-0 text-slate-700"
+                >
+                  Delete Question
+                </Heading>
+                <div className="mt-2">
+                  <div className="mt-6 flex justify-end gap-2">
+                    <Button
+                      onPress={close}
+                      className={`inline-flex justify-center border border-solid border-transparent px-5 py-2 font-semibold font-[inherit] text-base transition-colors cursor-default outline-none focus-visible:ring-2 ring-blue-500 ring-offset-2 bg-slate-200 text-slate-800 hover:border-slate-300 pressed:bg-slate-300`}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onPress={handleDelete}
+                      className={`inline-flex justify-center border border-solid border-transparent px-5 py-2 font-semibold font-[inherit] text-base transition-colors cursor-default outline-none focus-visible:ring-2 ring-blue-500 ring-offset-2 bg-red-500 text-white hover:border-red-600 pressed:bg-red-600`}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
+    </DialogTrigger>
   );
 };
 
@@ -287,7 +346,7 @@ const TipTap = ({
       }),
       Focus.configure({
         className: "ring-[1px] ring-primary",
-        mode: "deepest",
+        mode: "all",
       }),
       ListItem,
       Gapcursor,

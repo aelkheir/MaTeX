@@ -129,11 +129,7 @@ const NewQuestionForm: React.FC = () => {
   };
 
   return (
-    <Form
-      ref={formRef}
-      onSubmit={handleSubmit(onSubmit)}
-      className="w-full grow flex flex-col"
-    >
+    <Form ref={formRef} className="w-full grow flex flex-col">
       <Controller
         name="editorContent"
         control={control}
@@ -177,7 +173,6 @@ const NewQuestionForm: React.FC = () => {
             </span>
             <span className="bg-surface">
               <Button
-                type="submit"
                 className="py-3 px-4 text-on-surface bg-primary/[12%] flex justify-center items-center"
                 onPress={() => handleSubmit(onSubmit)()}
               >

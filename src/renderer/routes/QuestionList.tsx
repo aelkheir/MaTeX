@@ -270,12 +270,12 @@ const TipTapNav: React.FC<ListChildComponentProps<Question[]>> = ({
 
   return (
     <>
-      <div style={style} className="w-full px-4 pb-2 bg-surface">
+      <div style={style} className="w-full px-4 pb-2">
         <NavLink
           draggable={false}
           id={`q-${id}`}
           to={`questions/${id}`}
-          className={`w-full h-full flex flex-col items-center bg-primary/5 text-outline
+          className={`w-full h-full flex flex-col items-center bg-black/[2%] text-outline
         hover:bg-on-surface/[8%] focus:bg-on-surface/[12%]`}
         >
           <EditorContent
