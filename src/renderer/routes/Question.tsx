@@ -1,15 +1,7 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { EditorContent, useEditor, generateText } from "@tiptap/react";
-import React, { useRef, useState } from "react";
-import {
-  ControllerFieldState,
-  ControllerRenderProps,
-  SubmitHandler,
-  useForm,
-  UseFormStateReturn,
-  Controller,
-  RefCallBack,
-} from "react-hook-form";
+import { useRef, useState } from "react";
+import { useForm, Controller, RefCallBack } from "react-hook-form";
 import {
   ActionFunctionArgs,
   Form,
@@ -56,7 +48,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         `/units/${params.unitId}/lessons/${params.lessonId}/#q-${question.id}`
       );
     case "DELETE":
-      await window.electron.deleteQuestion(Number(updates.questionId!));
+      await window.electron.deleteQuestion(Number(updates.questionId));
       return redirect(`/units/${params.unitId}/lessons/${params.lessonId}`);
   }
   return null;
@@ -129,7 +121,6 @@ const schema = yup.object({
 });
 
 const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const {
     control,
     handleSubmit,
@@ -194,7 +185,6 @@ const EditQuestionForm = ({ question }: { question: QuestionModel }) => {
               <button
                 type="button"
                 className="py-3 px-4 text-on-surface flex justify-center items-center"
-                onClick={() => setIsDeleteModalOpen(true)}
               >
                 <LabelLarge>Delete</LabelLarge>
               </button>

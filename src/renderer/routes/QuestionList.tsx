@@ -217,7 +217,6 @@ const TipTapNav: React.FC<ListChildComponentProps<Question[]>> = ({
 }) => {
   const ctx = useContext(LessonPageContext);
   const { id, text } = data[index];
-  const isLast = index === data.length - 1;
   const editor = useEditor(
     {
       editable: false,
