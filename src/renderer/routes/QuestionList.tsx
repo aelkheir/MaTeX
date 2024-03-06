@@ -79,8 +79,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { lesson };
 }
 
-const LessonPageContext = React.createContext<object>({});
-
 export const QuestionList = () => {
   const { lesson } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const listRef = React.useRef<HTMLDivElement | null>(null);
@@ -138,46 +136,42 @@ export const QuestionList = () => {
     lesson.questions.length,
   ]);
 
-  const contextMemo = useMemo(() => ({}), []);
-
   return (
-    <LessonPageContext.Provider value={contextMemo}>
-      <div className="w-full col-start-3 row-start-1 row-span-2 flex flex-col bg-surface">
-        <div className="w-full h-16 shrink-0 flex items-center px-4 justify-between space-x-8">
-          <TipTapHeader lesson={lesson} />
-          <div className="flex items-center space-x-2">
-            <EditLesson key={lesson.id} lesson={lesson} />
-            <DeleteLesson key={"delete-" + String(lesson.id)} />
-          </div>
+    <div className="w-full col-start-3 row-start-1 row-span-2 flex flex-col bg-surface">
+      <div className="w-full h-16 shrink-0 flex items-center px-4 justify-between space-x-8">
+        <TipTapHeader lesson={lesson} />
+        <div className="flex items-center space-x-2">
+          <EditLesson key={lesson.id} lesson={lesson} />
+          <DeleteLesson key={"delete-" + String(lesson.id)} />
         </div>
-        <div className="w-full h-12 shrink-0 flex items-center px-4 mb-1">
-          <Link
-            to={"questions/new"}
-            className="w-full h-full px-2 flex items-center space-x-2"
-          >
-            <PlusIcon className="text-on-surface w-6 h-6" />
-            <LabelLarge color="text-on-surface">Add Quesion</LabelLarge>
-          </Link>
-        </div>
-        <div id={`questions-list`} ref={listRef} className="relative grow ">
-          <List
-            outerElementType={"ul"}
-            itemKey={(index) => lesson.questions[index].id}
-            outerRef={outerRef}
-            height={listHeight}
-            width={"w-full"}
-            className="scrollbar-thin scrollbar-thumb-outline-variant"
-            itemCount={lesson.questions.length}
-            itemSize={100}
-            itemData={lesson.questions}
-            overscanCount={2}
-          >
-            {TipTapNav}
-          </List>
-        </div>
-        {/* Delete Question Modal */}
       </div>
-    </LessonPageContext.Provider>
+      <div className="w-full h-12 shrink-0 flex items-center px-4 mb-1">
+        <Link
+          to={"questions/new"}
+          className="w-full h-full px-2 flex items-center space-x-2"
+        >
+          <PlusIcon className="text-on-surface w-6 h-6" />
+          <LabelLarge color="text-on-surface">Add Quesion</LabelLarge>
+        </Link>
+      </div>
+      <div id={`questions-list`} ref={listRef} className="relative grow ">
+        <List
+          outerElementType={"ul"}
+          itemKey={(index) => lesson.questions[index].id}
+          outerRef={outerRef}
+          height={listHeight}
+          width={"w-full"}
+          className="scrollbar-thin scrollbar-thumb-outline-variant"
+          itemCount={lesson.questions.length}
+          itemSize={100}
+          itemData={lesson.questions}
+          overscanCount={2}
+        >
+          {TipTapNav}
+        </List>
+      </div>
+      {/* Delete Question Modal */}
+    </div>
   );
 };
 
@@ -215,7 +209,6 @@ const TipTapNav: React.FC<ListChildComponentProps<Question[]>> = ({
   index,
   style,
 }) => {
-  const ctx = useContext(LessonPageContext);
   const { id, text } = data[index];
   const editor = useEditor(
     {

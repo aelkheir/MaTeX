@@ -34,6 +34,7 @@ import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
 import { FieldError, Input, TextField } from "react-aria-components";
 import { LabelLarge } from "../components/text/LabelLarge";
 import { OrderedList } from "../components/tiptap/OrderedList";
+import { Menu } from "../components/tiptap/Menu";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -100,7 +101,7 @@ const schema = yup.object({
         Bold,
         Italic,
         Paragraph,
-        // OrderedList,
+        OrderedList,
         ListItem,
         Table,
         TableRow,
@@ -302,9 +303,8 @@ const TipTap = ({
   }
   return (
     <>
-      <div className="w-full min-h-[48px] -mt-1 shrink-0 flex flex-wrap items-center space-x-1 px-4">
-        {/* <Menu editor={editor} /> */}
-        Menu
+      <div className="w-full h-12 shrink-0 flex flex-wrap items-center space-x-1 px-4 bg-black/[1%] p-1">
+        <Menu editor={editor} />
       </div>
       <div className="w-full grow relative overflow-auto flex flex-col">
         <EditorContent
