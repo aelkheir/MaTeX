@@ -425,6 +425,7 @@ const TipTap = ({
     editor?.chain().focus("end").run();
     setPrevEditor(editor);
   }
+
   return (
     <>
       <div className="w-full h-12 shrink-0 flex flex-wrap items-center space-x-1 px-4 bg-black/[1%] p-1">

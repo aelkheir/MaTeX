@@ -1,7 +1,7 @@
-import { Node, mergeAttributes, nodeInputRule } from '@tiptap/core';
-import { nodePasteRule, ReactNodeViewRenderer } from '@tiptap/react';
-import { LatexNodeView } from './LatexNodeView';
-import Paragraph from '@tiptap/extension-paragraph';
+import { Node, mergeAttributes, nodeInputRule } from "@tiptap/core";
+import { nodePasteRule, ReactNodeViewRenderer } from "@tiptap/react";
+import { LatexNodeView } from "./LatexNodeView";
+import Paragraph from "@tiptap/extension-paragraph";
 
 // Must be extended to add the new node type [either Inline or Display]
 export const LatexNode = Node.create({
@@ -10,22 +10,22 @@ export const LatexNode = Node.create({
 
   addAttributes: () => ({
     code: {
-      default: '',
+      default: "",
     },
     formOpen: {
       default: false,
-      parseHTML: (element) => element.dataset.formopen === 'true',
+      parseHTML: (element) => element.dataset.formopen === "true",
     },
     display: {
       default: false,
-      parseHTML: (element) => element.dataset.display === 'true',
+      parseHTML: (element) => element.dataset.display === "true",
     },
   }),
 
   parseHTML() {
     return [
       {
-        tag: 'latex',
+        tag: "latex",
       },
     ];
   },
@@ -35,10 +35,9 @@ export const LatexNode = Node.create({
     node,
   }) {
     return [
-      'latex',
+      "latex",
       mergeAttributes(HTMLAttributes, {
-        'data-display': node.attrs.display,
-        'data-formopen': node.attrs.formOpen,
+        "data-display": node.attrs.display,
       }),
     ];
   },
@@ -50,11 +49,11 @@ export const LatexNode = Node.create({
   addKeyboardShortcuts() {
     return {
       // ↓ your new keyboard shortcut
-      'Alt-x': () =>
+      "Alt-x": () =>
         this.editor.commands.insertContent(
           `<latex data-display='false' code='' data-formopen='true'></latex-inline>`
         ),
-      'Alt-z': () =>
+      "Alt-z": () =>
         this.editor.commands.insertContent(
           `<latex data-display='true' code='' data-formopen='true'></latex-inline>`
         ),
@@ -66,16 +65,16 @@ const inlineInputRule = /(?:^\$|\s\$)([^\$]+)(?:\$$|\$\s)/gs;
 const inlinePastRule = /(\$([^\$]+?)\$)/g;
 
 export const InlineLatex = LatexNode.extend({
-  name: 'inlineLatex',
-  group: 'inline',
+  name: "inlineLatex",
+  group: "inline",
   inline: true,
 
   parseHTML() {
     return [
       {
-        tag: 'latex',
+        tag: "latex",
         getAttrs: (node) =>
-          (node as HTMLElement).dataset.display === 'true' ? false : null,
+          (node as HTMLElement).dataset.display === "true" ? false : null,
       },
     ];
   },
@@ -128,16 +127,16 @@ const displayInputRule = /(\$\$([^\$]+)\$\$)/g;
 const displayPastRule = /(\$\$([^\$]*?)\$\$)/g;
 
 export const DisplayLatex = LatexNode.extend({
-  name: 'displayLatex',
-  group: 'block',
+  name: "displayLatex",
+  group: "block",
   inline: false,
 
   parseHTML() {
     return [
       {
-        tag: 'latex',
+        tag: "latex",
         getAttrs: (node) =>
-          (node as HTMLElement).dataset.display === 'true' ? null : false,
+          (node as HTMLElement).dataset.display === "true" ? null : false,
       },
     ];
   },
