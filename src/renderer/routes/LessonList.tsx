@@ -7,6 +7,7 @@ import {
   redirect,
   useLoaderData,
   useNavigate,
+  useParams,
   useSubmit,
 } from "react-router-dom";
 import { useEditor, EditorContent, generateText } from "@tiptap/react";
@@ -79,6 +80,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export const LessonList = () => {
   const { unit } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const navigate = useNavigate();
+  const params = useParams();
 
   return (
     <>
@@ -98,6 +100,7 @@ export const LessonList = () => {
               selectionMode="single"
               disallowEmptySelection={true}
               items={unit.lessons}
+              selectedKeys={[Number(params.lessonId) || -1]}
               onSelectionChange={(keys) => {
                 const currentKey = Array.from(keys)[0];
                 currentKey && navigate(`lessons/${currentKey}`);

@@ -110,6 +110,7 @@ export const UnitList = () => {
     ReturnType<typeof loader>
   >;
   const navigate = useNavigate();
+  const params = useParams();
 
   return (
     <>
@@ -128,6 +129,7 @@ export const UnitList = () => {
           selectionMode="single"
           disallowEmptySelection={true}
           items={course.units}
+          selectedKeys={[Number(params.unitId) || -1]}
           onSelectionChange={(keys) => {
             const currentKey = Array.from(keys)[0];
             currentKey && navigate(`units/${currentKey}`);
