@@ -657,7 +657,7 @@ const TipTapNav = ({ lesson }: { lesson: LessonModel }) => {
     <ListBoxItem
       id={lesson.id}
       textValue={editor ? editor.getText() : lesson.name}
-      className={`w-full flex items-center text-outline focus:outline-none focus-visible:ring-2 ring-inset ring-outline selected:bg-black/5 selected:sticky selected:z-10 selected:top-0 selected:bottom-0 left-0 selected:text-on-surface`}
+      className={`w-full flex items-center text-outline focus:outline-none focus-visible:ring-2 ring-inset ring-outline selected:bg-black/5 selected:sticky selected:z-10 selected:top-0 selected:bottom-0 left-0 selected:text-on-surface cursor-default`}
     >
       <EditorContent editor={editor} className={`h-full w-full`} />
     </ListBoxItem>

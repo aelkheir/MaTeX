@@ -276,26 +276,13 @@ const TipTapNav: React.FC<ListChildComponentProps<Question[]>> = ({
           id={`q-${id}`}
           to={`questions/${id}`}
           className={`w-full h-full flex flex-col items-center bg-black/[2%] text-outline
-        hover:bg-on-surface/[8%] focus:bg-on-surface/[12%]`}
+        hover:bg-on-surface/[8%] focus:bg-on-surface/[12%] cursor-default`}
         >
           <EditorContent
             editor={editor}
             readOnly
             className={`h-full w-full overflow-clip text-on-surface `}
           />
-          {/* <div className="w-full flex justify-end text-on-surface">
-            <span className="">
-              <button
-                className="px-3 py-2 flex items-center space-x-1"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              >
-                <LabelMedium>Delete</LabelMedium>
-              </button>
-            </span>
-          </div> */}
         </NavLink>
       </div>
     </>
