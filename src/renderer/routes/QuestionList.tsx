@@ -335,10 +335,12 @@ export const TipTapInput = ({
   content,
   onChange,
   contentRef,
+  onSubmit,
 }: {
   content: string;
   onChange: (...event: unknown[]) => void;
   contentRef: RefCallBack;
+  onSubmit: () => void;
 }) => {
   const editor = useEditor({
     editorProps: {
@@ -374,6 +376,11 @@ export const TipTapInput = ({
       <EditorContent
         editor={editor}
         ref={contentRef}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onSubmit();
+          }
+        }}
         className="grow w-full flex items-center overflow-y-auto text-on-surface"
       />
     </div>
@@ -448,6 +455,12 @@ const EditLesson = ({ lesson }: { lesson: Lesson }) => {
                           content={value}
                           onChange={onChange}
                           contentRef={ref}
+                          onSubmit={handleSubmit(() => {
+                            if (formRef.current) {
+                              submit(formRef.current, { method: "POST" });
+                              close();
+                            }
+                          })}
                         />
                         <Input ref={ref} hidden />
                         <RACText slot="description">
