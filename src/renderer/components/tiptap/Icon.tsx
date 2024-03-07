@@ -7,6 +7,7 @@ const Bold = () => {
       height="24"
       viewBox="0 -960 960 960"
       width="24"
+      className="text-on-background fill-on-background"
     >
       <path d="M272-200v-560h221q65 0 120 40t55 111q0 51-23 78.5T602-491q25 11 55.5 41t30.5 90q0 89-65 124.5T501-200H272Zm121-112h104q48 0 58.5-24.5T566-372q0-11-10.5-35.5T494-432H393v120Zm0-228h93q33 0 48-17t15-38q0-24-17-39t-44-15h-95v109Z" />
     </svg>
@@ -20,6 +21,7 @@ const Italic = () => {
       height="24"
       viewBox="0 -960 960 960"
       width="24"
+      className="text-on-background fill-on-background"
     >
       <path d="M200-200v-100h160l120-360H320v-100h400v100H580L460-300h140v100H200Z" />
     </svg>
@@ -33,6 +35,7 @@ const Paragraph = () => {
       height="24"
       viewBox="0 -960 960 960"
       width="24"
+      className="text-on-background fill-on-background"
     >
       <path d="M360-160v-240q-83 0-141.5-58.5T160-600q0-83 58.5-141.5T360-800h360v80h-80v560h-80v-560H440v560h-80Z" />
     </svg>
@@ -46,6 +49,7 @@ const List = () => {
       height="24"
       viewBox="0 -960 960 960"
       width="24"
+      className="text-on-background fill-on-background"
     >
       <path d="M360-200v-80h480v80H360Zm0-240v-80h480v80H360Zm0-240v-80h480v80H360ZM200-160q-33 0-56.5-23.5T120-240q0-33 23.5-56.5T200-320q33 0 56.5 23.5T280-240q0 33-23.5 56.5T200-160Zm0-240q-33 0-56.5-23.5T120-480q0-33 23.5-56.5T200-560q33 0 56.5 23.5T280-480q0 33-23.5 56.5T200-400Zm0-240q-33 0-56.5-23.5T120-720q0-33 23.5-56.5T200-800q33 0 56.5 23.5T280-720q0 33-23.5 56.5T200-640Z" />
     </svg>
@@ -59,6 +63,7 @@ const Table = () => {
       height="24"
       viewBox="0 -960 960 960"
       width="24"
+      className="text-on-background fill-on-background"
     >
       <path d="M120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200Zm80-400h560v-160H200v160Zm213 200h134v-120H413v120Zm0 200h134v-120H413v120ZM200-400h133v-120H200v120Zm427 0h133v-120H627v120ZM200-200h133v-120H200v120Zm427 0h133v-120H627v120Z" />
     </svg>
@@ -67,7 +72,7 @@ const Table = () => {
 
 const SmallX = () => {
   return (
-    <span className="katex">
+    <span className="katex text-on-background">
       <span className="katex-mathml">
         <math xmlns="http://www.w3.org/1998/Math/MathML">
           <semantics>
@@ -90,7 +95,7 @@ const SmallX = () => {
 
 const CapitalX = () => {
   return (
-    <span className="katex">
+    <span className="katex text-on-background">
       <span className="katex-mathml">
         <math xmlns="http://www.w3.org/1998/Math/MathML">
           <semantics>
@@ -123,6 +128,7 @@ const RowAfter = () => {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      className="text-on-background fill-on-background"
     >
       <path
         fill="currentColor"
@@ -139,6 +145,7 @@ const RowBefore = () => {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      className="text-on-background fill-on-background"
     >
       <path
         fill="currentColor"
@@ -155,6 +162,7 @@ const DeleteRow = () => {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      className="text-on-background fill-on-background"
     >
       <path
         fill="currentColor"
@@ -171,6 +179,7 @@ const ColumnAfter = () => {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      className="text-on-background fill-on-background"
     >
       <path
         fill="currentColor"
@@ -187,6 +196,7 @@ const ColumnBefore = () => {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      className="text-on-background fill-on-background"
     >
       <path
         fill="currentColor"
@@ -203,6 +213,7 @@ const DeleteColumn = () => {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      className="text-on-background fill-on-background"
     >
       <path
         fill="currentColor"
@@ -219,6 +230,7 @@ const DeleteTable = () => {
       width="24"
       height="24"
       viewBox="0 0 2048 2048"
+      className="text-on-background fill-on-background"
     >
       <path
         fill="currentColor"
