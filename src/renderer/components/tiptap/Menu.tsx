@@ -118,76 +118,81 @@ export const Menu: React.FC<MenuProps> = ({ editor }) => {
             .run();
         }}
         isActive={isTableActive}
+        isDisabled={!editor.can().chain().focus().insertTable().run()}
       >
         <Table />
       </MenuButton>
-      {isTableActive ? (
-        <>
-          <MenuButton
-            onPress={() => editor.chain().focus().addColumnBefore().run()}
-            className={`ml-1 border border-outline flex justify-center items-center`}
-          >
-            <ColumnBefore />
-          </MenuButton>
 
-          <MenuButton
-            onPress={() => editor.chain().focus().deleteColumn().run()}
-            className={`ml-1 border border-outline flex justify-center items-center`}
-          >
-            <DeleteColumn />
-          </MenuButton>
+      <MenuButton
+        onPress={() => editor.chain().focus().addColumnBefore().run()}
+        className={`ml-1 border border-outline flex justify-center items-center`}
+        isDisabled={!editor.can().chain().focus().addColumnBefore().run()}
+      >
+        <ColumnBefore />
+      </MenuButton>
 
-          <MenuButton
-            onPress={() => editor.chain().focus().addColumnAfter().run()}
-            className={`ml-1 border border-outline flex justify-center items-center`}
-          >
-            <ColumnAfter />
-          </MenuButton>
+      <MenuButton
+        onPress={() => editor.chain().focus().deleteColumn().run()}
+        className={`ml-1 border border-outline flex justify-center items-center`}
+        isDisabled={!editor.can().chain().focus().deleteColumn().run()}
+      >
+        <DeleteColumn />
+      </MenuButton>
 
-          <MenuButton
-            onPress={() => editor.chain().focus().addRowBefore().run()}
-            className={`ml-1 border border-outline flex justify-center items-center`}
-          >
-            <RowBefore />
-          </MenuButton>
+      <MenuButton
+        onPress={() => editor.chain().focus().addColumnAfter().run()}
+        className={`ml-1 border border-outline flex justify-center items-center`}
+        isDisabled={!editor.can().chain().focus().addColumnAfter().run()}
+      >
+        <ColumnAfter />
+      </MenuButton>
 
-          <MenuButton
-            onPress={() => editor.chain().focus().deleteRow().run()}
-            className={`ml-1 border border-outline flex justify-center items-center`}
-          >
-            <DeleteRow />
-          </MenuButton>
+      <MenuButton
+        onPress={() => editor.chain().focus().addRowBefore().run()}
+        className={`ml-1 border border-outline flex justify-center items-center`}
+        isDisabled={!editor.can().chain().focus().addRowBefore().run()}
+      >
+        <RowBefore />
+      </MenuButton>
 
-          <MenuButton
-            onPress={() => editor.chain().focus().addRowAfter().run()}
-            className={`ml-1 border border-outline flex justify-center items-center`}
-          >
-            <RowAfter />
-          </MenuButton>
+      <MenuButton
+        onPress={() => editor.chain().focus().deleteRow().run()}
+        className={`ml-1 border border-outline flex justify-center items-center`}
+        isDisabled={!editor.can().chain().focus().deleteRow().run()}
+      >
+        <DeleteRow />
+      </MenuButton>
 
-          <MenuButton
-            onPress={() => editor.chain().focus().deleteTable().run()}
-          >
-            <DeleteTable />
-          </MenuButton>
-        </>
-      ) : null}
+      <MenuButton
+        onPress={() => editor.chain().focus().addRowAfter().run()}
+        className={`ml-1 border border-outline flex justify-center items-center`}
+        isDisabled={!editor.can().chain().focus().addRowAfter().run()}
+      >
+        <RowAfter />
+      </MenuButton>
+
+      <MenuButton
+        onPress={() => editor.chain().focus().deleteTable().run()}
+        isDisabled={!editor.can().chain().focus().deleteTable().run()}
+      >
+        <DeleteTable />
+      </MenuButton>
     </>
   );
 };
 
 const MenuButton = ({
-  onPress,
   isActive,
   children,
+  ...props
 }: ButtonProps & { isActive?: boolean }) => {
   return (
     <Button
       type="button"
-      onPress={onPress}
-      className={`w-8 aspect-square ml-1 flex justify-center items-center ${
+      {...props}
+      className={`w-8 aspect-square ml-1 flex justify-center items-center text-on-background fill-on-background ${
         isActive ? "bg-primary/[12%]" : ""
-      }`}
+      } disabled:text-outline-variant`}
     >
       {children}
     </Button>

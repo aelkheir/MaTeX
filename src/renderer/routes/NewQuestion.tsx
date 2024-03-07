@@ -280,7 +280,7 @@ const TipTap = ({
 
   return (
     <>
-      <div className="w-full h-12 shrink-0 flex flex-wrap items-center space-x-1 px-4 bg-black/[1%] p-1">
+      <div className="w-full h-12 shrink-0 flex flex-wrap items-center justify-center space-x-1 px-4 bg-black/[1%] p-1">
         <Menu editor={editor} />
       </div>
       <div className="w-full grow relative overflow-auto flex flex-col">
