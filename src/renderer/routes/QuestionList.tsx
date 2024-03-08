@@ -17,7 +17,6 @@ import { Document } from "@tiptap/extension-document";
 import { Text } from "@tiptap/extension-text";
 import { Paragraph } from "@tiptap/extension-paragraph";
 import { History } from "@tiptap/extension-history";
-import { OrderedList } from "@tiptap/extension-ordered-list";
 import { ListItem } from "@tiptap/extension-list-item";
 import { Bold } from "@tiptap/extension-bold";
 import { Italic } from "@tiptap/extension-italic";
@@ -45,6 +44,7 @@ import {
 } from "react-aria-components";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { OrderedList } from "../components/tiptap/OrderedList";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -160,7 +160,6 @@ export const QuestionList = () => {
           outerRef={outerRef}
           height={listHeight}
           width={"w-full"}
-          className="scrollbar-thin scrollbar-thumb-outline-variant"
           itemCount={lesson.questions.length}
           itemSize={100}
           itemData={lesson.questions}
@@ -169,7 +168,6 @@ export const QuestionList = () => {
           {TipTapNav}
         </List>
       </div>
-      {/* Delete Question Modal */}
     </div>
   );
 };

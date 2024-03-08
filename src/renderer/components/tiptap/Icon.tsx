@@ -42,7 +42,7 @@ const Paragraph = () => {
   );
 };
 
-const List = () => {
+const HorizantalList = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +51,21 @@ const List = () => {
       width="24"
       className="text-inherit fill-inherit"
     >
-      <path d="M360-200v-80h480v80H360Zm0-240v-80h480v80H360Zm0-240v-80h480v80H360ZM200-160q-33 0-56.5-23.5T120-240q0-33 23.5-56.5T200-320q33 0 56.5 23.5T280-240q0 33-23.5 56.5T200-160Zm0-240q-33 0-56.5-23.5T120-480q0-33 23.5-56.5T200-560q33 0 56.5 23.5T280-480q0 33-23.5 56.5T200-400Zm0-240q-33 0-56.5-23.5T120-720q0-33 23.5-56.5T200-800q33 0 56.5 23.5T280-720q0 33-23.5 56.5T200-640Z" />
+      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-507h560v-133H200v133Zm0 214h560v-134H200v134Zm0 213h560v-133H200v133Zm40-454v-80h80v80h-80Zm0 214v-80h80v80h-80Zm0 214v-80h80v80h-80Z" />
+    </svg>
+  );
+};
+
+const VerticallList = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="24"
+      viewBox="0 -960 960 960"
+      width="24"
+      className="text-inherit fill-inherit rotate-90"
+    >
+      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-507h560v-133H200v133Zm0 214h560v-134H200v134Zm0 213h560v-133H200v133Zm40-454v-80h80v80h-80Zm0 214v-80h80v80h-80Zm0 214v-80h80v80h-80Z" />
     </svg>
   );
 };
@@ -244,7 +258,6 @@ export {
   Bold,
   Italic,
   Paragraph,
-  List,
   Table,
   SmallX,
   CapitalX,
@@ -255,4 +268,6 @@ export {
   DeleteColumn,
   DeleteRow,
   DeleteTable,
+  HorizantalList,
+  VerticallList,
 };

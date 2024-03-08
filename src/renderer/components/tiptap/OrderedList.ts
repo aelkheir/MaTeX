@@ -3,6 +3,35 @@ import { OrderedList as TOrderedList } from "@tiptap/extension-ordered-list";
 
 const inputRegex = /^\s*(\d+)\.\s$/;
 export const OrderedList = TOrderedList.extend({
+  addAttributes() {
+    const parent = this.parent?.();
+
+    return {
+      ...parent,
+      gridCols: {
+        default: 2,
+        renderHTML(attributes) {
+          return (
+            attributes.orientation === "vertical" && {
+              style: `grid-template-columns: repeat(${attributes.gridCols}, minmax(0, 1fr))`,
+              "data-cols": attributes.gridCols,
+            }
+          );
+        },
+      },
+      orientation: {
+        default: "horizantal",
+        renderHTML(attributes) {
+          return (
+            attributes.orientation === "vertical" && {
+              style: "display: grid",
+              "data-orientation": attributes.orientation,
+            }
+          );
+        },
+      },
+    };
+  },
   addInputRules() {
     let inputRule = wrappingInputRule({
       find: inputRegex,

@@ -12,13 +12,12 @@ export const LatexNode = Node.create({
     code: {
       default: "",
     },
+    display: {
+      default: false,
+    },
     formOpen: {
       default: false,
       parseHTML: (element) => element.dataset.formopen === "true",
-    },
-    display: {
-      default: false,
-      parseHTML: (element) => element.dataset.display === "true",
     },
   }),
 
@@ -30,15 +29,13 @@ export const LatexNode = Node.create({
     ];
   },
 
-  renderHTML({
-    HTMLAttributes: { display, formOpen, ...HTMLAttributes },
-    node,
-  }) {
+  renderHTML({ node }) {
     return [
       "latex",
-      mergeAttributes(HTMLAttributes, {
+      {
+        code: node.attrs.code,
         "data-display": node.attrs.display,
-      }),
+      },
     ];
   },
 

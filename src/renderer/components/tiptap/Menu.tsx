@@ -1,6 +1,13 @@
 import { Editor } from "@tiptap/react";
 import React from "react";
-import { Button, ButtonProps } from "react-aria-components";
+import {
+  Button,
+  ButtonProps,
+  Group,
+  Input,
+  Label,
+  NumberField,
+} from "react-aria-components";
 import {
   Bold,
   CapitalX,
@@ -9,14 +16,16 @@ import {
   DeleteColumn,
   DeleteRow,
   DeleteTable,
+  HorizantalList,
   Italic,
-  List,
   Paragraph,
   RowAfter,
   RowBefore,
   SmallX,
   Table,
+  VerticallList,
 } from "./Icon";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
 
 interface MenuProps {
   editor: Editor | null;
@@ -61,12 +70,126 @@ export const Menu: React.FC<MenuProps> = ({ editor }) => {
       </MenuButton>
 
       <MenuButton
-        onPress={() => editor.chain().focus().toggleOrderedList().run()}
+        onPress={() => {
+          if (isOrderedListActive) {
+            const orientation = editor.getAttributes("orderedList").orientation;
+            if (orientation === "horizantal") {
+              editor.chain().focus().toggleOrderedList().run();
+            } else {
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("orderedList", {
+                  orientation: "horizantal",
+                })
+                .run();
+            }
+          } else {
+            editor
+              .chain()
+              .focus()
+              .toggleOrderedList()
+              .updateAttributes("orderedList", {
+                orientation: "horizantal",
+              })
+              .run();
+          }
+        }}
         isDisabled={!editor.can().chain().focus().toggleOrderedList().run()}
-        isActive={isOrderedListActive}
+        isActive={
+          isOrderedListActive &&
+          editor.getAttributes("orderedList").orientation === "horizantal"
+        }
       >
-        <List />
+        <HorizantalList />
       </MenuButton>
+
+      <MenuButton
+        onPress={() => {
+          if (isOrderedListActive) {
+            const orientation = editor.getAttributes("orderedList").orientation;
+            if (orientation === "vertical") {
+              editor.chain().focus().toggleOrderedList().run();
+            } else {
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("orderedList", {
+                  orientation: "vertical",
+                  gridCols: 2,
+                })
+                .run();
+            }
+          } else {
+            editor
+              .chain()
+              .focus()
+              .toggleOrderedList()
+              .updateAttributes("orderedList", {
+                orientation: "vertical",
+                gridCols: 2,
+              })
+              .run();
+          }
+        }}
+        isDisabled={!editor.can().chain().focus().toggleOrderedList().run()}
+        isActive={
+          isOrderedListActive &&
+          editor.getAttributes("orderedList").orientation === "vertical"
+        }
+      >
+        <VerticallList />
+      </MenuButton>
+      <NumberField
+        minValue={2}
+        maxValue={4}
+        step={1}
+        aria-label="Number of columns in list"
+        isDisabled={
+          !isOrderedListActive ||
+          editor.getAttributes("orderedList").orientation !== "vertical"
+        }
+        value={
+          isOrderedListActive &&
+          editor.getAttributes("orderedList").orientation === "vertical"
+            ? editor.getAttributes("orderedList").gridCols
+            : null
+        }
+        onChange={(value) => {
+          editor
+            .chain()
+            .updateAttributes("orderedList", {
+              gridCols: value,
+            })
+            .run();
+        }}
+        className={"border border-outline"}
+      >
+        <Label />
+        <Group className={"flex gap-1"}>
+          <Button
+            slot="decrement"
+            className={
+              "text-on-background flex justify-center items-center border-r border-outline"
+            }
+          >
+            <MinusIcon className="w-4 h-4" />
+          </Button>
+          <Input
+            className={
+              "w-4 aspect-square text-center flex justify-center items-center font-medium bg-transparent"
+            }
+          />
+          <Button
+            slot="increment"
+            className={
+              "text-on-background flex justify-center items-center border-l border-outline"
+            }
+          >
+            <PlusIcon className="w-4 h-4" />
+          </Button>
+        </Group>
+      </NumberField>
 
       <MenuButton
         onPress={() =>
