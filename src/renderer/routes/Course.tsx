@@ -185,9 +185,9 @@ const AddCourse = ({ levels }: { levels: Level[] }) => {
                 autoFocus
                 isRequired
                 minLength={5}
-                className={"flex flex-col"}
+                className={"flex flex-col gap-1"}
               >
-                <Label className="text-sm">Course name</Label>
+                <Label className="text-xs">Course name</Label>
                 <Input
                   className={
                     "px-2 py-1 bg-gray-300 grow outline-none border-b-2 border-transparent focus:border-primary text-sm"
@@ -199,14 +199,14 @@ const AddCourse = ({ levels }: { levels: Level[] }) => {
                 name="levelName"
                 formValue="text"
                 allowsCustomValue
-                className={"flex flex-col"}
+                className={"flex flex-col gap-1"}
               >
-                <Label className="text-sm">Level</Label>
+                <Label className="text-xs">Course level</Label>
                 <Group className="flex items-center py-1 px-2 bg-gray-300 grow outline-none border-b-2 border-transparent focus-within:border-primary bg-black/10">
                   <Input
                     placeholder="no level selected"
                     className={
-                      "grow border-none bg-transparent outline-none text-sm placeholder:italic"
+                      "grow border-none bg-transparent outline-none text-sm placeholder:italic placeholder:text-outline"
                     }
                   />
                   <Button>
@@ -220,10 +220,10 @@ const AddCourse = ({ levels }: { levels: Level[] }) => {
                         id={String(item.id)}
                         textValue={item.name}
                         className={
-                          "h-8 text-sm group flex items-center gap-2 cursor-default select-none py-1 px-4 outline-none text-gray-900 focus:bg-black/5 focus:text-black"
+                          "h-8 group flex items-center gap-2 cursor-default select-none py-1 px-2 outline-none text-gray-900 focus:bg-black/5 focus:text-black"
                         }
                       >
-                        <span className="flex-1 flex items-center gap-2 truncate font-normal group-selected:font-medium">
+                        <span className="flex-1 flex items-center truncate font-normal group-selected:font-medium text-xs">
                           {item.name}
                         </span>
                       </ListBoxItem>
