@@ -27,6 +27,7 @@ import {
   action as questionAction,
 } from "./routes/Question";
 import { NewQuestion, action as newQuestionAction } from "./routes/NewQuestion";
+import { NewExam } from "./routes/NewExam";
 
 const router = createMemoryRouter(
   [
@@ -35,6 +36,11 @@ const router = createMemoryRouter(
       element: <Root />,
       errorElement: <Error />,
       children: [
+        {
+          path: "exams/new",
+          element: <NewExam />,
+          errorElement: <Error />,
+        },
         {
           path: "/courses",
           element: <Course />,
