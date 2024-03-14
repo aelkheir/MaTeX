@@ -85,13 +85,16 @@ export const Course = () => {
   const { courseGroups, levels } = useLoaderData() as Awaited<
     ReturnType<typeof loader>
   >;
+  const params = useParams();
   return (
     <>
       <div className="col-start-1 row-start-1 bg-ref-primary-40 flex flex-col rounded-tr-md">
         <div className="px-2 py-2 ">
           <NavLink
             className="px-2 cursor-default shrink-0 flex items-center text-ref-primary-100 text-sm"
-            to={"/exams/courses"}
+            to={
+              "/exams/courses" + (params.courseId ? `/${params.courseId}` : "")
+            }
           >
             Create Exam
           </NavLink>

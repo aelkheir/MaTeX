@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "react-aria-components";
 import { groupCoursesByLevel } from "../helpers";
-import { ChevronUpDownIcon } from "@heroicons/react/24/solid";
+import { ArrowLeftIcon, ChevronUpDownIcon } from "@heroicons/react/24/solid";
 import { Course } from "../../main/entities";
 import {
   Outlet,
@@ -39,8 +39,16 @@ export const Exam = () => {
 
   return (
     <>
-      <div className="col-start-1 col-span-2 row-start-1 row-span-1 flex flex-col">
-        <div className="p-4 w-80 self-start">
+      <div className="col-start-1 row-start-1 row-span-1 flex items-end">
+        <div className="shrink-0 flex items-center justify-between text-on-surface pl-3 -translate-y-0.5">
+          <Button
+            className="flex justify-center items-start p-1"
+            onPress={() => navigate(-1)}
+          >
+            <ArrowLeftIcon className="w-5 h-5 text-on-background" />
+          </Button>
+        </div>
+        <div className="px-4 w-full self-start">
           <CourseSelect
             courseGroups={courseGroups}
             selectedKey={params.courseId || -1}
@@ -67,10 +75,10 @@ const CourseSelect = ({
 }) => {
   return (
     <Select
-      className="flex flex-col gap-1"
       placeholder="Select a course"
       selectedKey={selectedKey}
       onSelectionChange={onSelectionChange}
+      className="flex flex-col gap-1"
     >
       <Label className="text-on-background cursor-default text-xs">
         Course

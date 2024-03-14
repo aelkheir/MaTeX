@@ -47,10 +47,32 @@ const router = createMemoryRouter(
           loader: newExamLoader,
           children: [
             {
+              index: true,
+              element: (
+                <div className="col-start-1 col-span-2 row-start-2 flex justify-center items-center rounded-br-md">
+                  <span className="italic text-xs">
+                    Select course to generate exam for
+                  </span>
+                </div>
+              ),
+            },
+            {
               path: "/exams/courses/:courseId/*",
               element: <ExamQuestionList />,
               errorElement: <Error />,
               loader: examUnitTabsLoader,
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <div className="col-start-3 row-start-1 row-span-2 flex justify-center items-center rounded-br-md">
+                      <span className="italic text-xs">
+                        your PDF will show here
+                      </span>
+                    </div>
+                  ),
+                },
+              ],
             },
           ],
         },

@@ -6,6 +6,7 @@ import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
 import {
   LoaderFunctionArgs,
   NavLink,
+  Outlet,
   useLoaderData,
   useLocation,
   useParams,
@@ -19,9 +20,17 @@ import { TableRow as TipTapTableRow } from "@tiptap/extension-table-row";
 import { TableHeader as TipTapTableHeader } from "@tiptap/extension-table-header";
 import { Table as TipTapTable } from "@tiptap/extension-table";
 import { Question } from "../../main/entities";
-import { useEffect, useRef, useState } from "react";
+import { memo, useDeferredValue, useEffect, useRef, useState } from "react";
 import { useElementScrollRestoration } from "../hooks/useElementScrollRestoration";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
+import {
+  Button,
+  Group,
+  Input,
+  Label,
+  SearchField,
+} from "react-aria-components";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const questions = await window.electron.fetchCourseQuestions(
@@ -32,23 +41,54 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export const ExamQuestionList = () => {
   const { questions } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+
+  return (
+    <>
+      <div className="pl-4 col-start-2 row-start-1 w-full h-full">
+        <SearchField
+          className={"w-full flex flex-col gap-1 [&[data-empty]_button]:hidden"}
+          value={query}
+          onChange={setQuery}
+        >
+          <Label className="text-xs">Search</Label>
+          <Group className="h-8 flex items-center bg-gray-300 grow outline-none border-b-2 border-transparent focus-within:border-primary bg-black/5">
+            <span className="p-1">
+              <MagnifyingGlassIcon className="w-4 h-4 text-on-background" />
+            </span>
+            <Input
+              placeholder="Search questions, lessons, unit..."
+              className={
+                "grow py-1 pr-2 border-none bg-transparent outline-none text-sm placeholder:italic placeholder:text-outline [&::-webkit-search-cancel-button]:hidden"
+              }
+            />
+            <Button className={"p-1 empty:hidden"}>
+              <XMarkIcon className="w-4 h-4 text-on-background" />
+            </Button>
+          </Group>
+        </SearchField>
+      </div>
+      <div className="col-start-1 col-span-2 row-start-2 w-full h-full flex flex-col pl-4">
+        <QuestionList questions={questions} deferredQuery={deferredQuery} />
+      </div>
+      <Outlet />
+    </>
+  );
+};
+
+const QuestionList = memo(function QuestionList({
+  questions,
+  deferredQuery,
+}: {
+  questions: Question[];
+  deferredQuery: string;
+}) {
   const listRef = useRef<HTMLDivElement | null>(null);
   const outerRef = useRef<HTMLUListElement>(null);
-  const params = useParams();
-
-  useElementScrollRestoration({
-    id: "lessons",
-    scrollElementRef: outerRef,
-    getKey: (location) => {
-      const pathname = location.pathname.endsWith("/")
-        ? location.pathname.slice(0, -1)
-        : location.pathname;
-      return pathname + params.courseId;
-    },
-  });
-
   const [listHeight, setListHeight] = useState(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
+  const params = useParams();
 
   useEffect(() => {
     if (listRef.current) {
@@ -63,6 +103,17 @@ export const ExamQuestionList = () => {
       setScrollbarWidth(scrollbarWidth);
     }
   }, [outerRef.current]);
+
+  useElementScrollRestoration({
+    id: "lessons",
+    scrollElementRef: outerRef,
+    getKey: (location) => {
+      const pathname = location.pathname.endsWith("/")
+        ? location.pathname.slice(0, -1)
+        : location.pathname;
+      return pathname + params.courseId;
+    },
+  });
 
   const location = useLocation();
   const hashId = location.hash.slice(1);
@@ -97,34 +148,38 @@ export const ExamQuestionList = () => {
     questions.length,
   ]);
 
+  console.time("filter array");
+  const filteredQuestions = deferredQuery
+    ? filter({ query: deferredQuery, questions })
+    : questions;
+  console.timeEnd("filter array");
+
   return (
-    <div className="col-start-1 col-span-2 row-start-2 flex bg-red-200">
-      <div className="w-full h-full col-start-3 row-start-1 row-span-2 flex flex-col bg-surface">
-        <div className="flex py-1" style={{ marginRight: scrollbarWidth }}>
-          <div className="basis-2/3 px-4  grow-0 text-sm">Question</div>
-          <div className="basis-1/3 px-2  grow-0 text-sm">Unit</div>
-        </div>
-        {questions.length ? (
-          <div id={`questions-list`} ref={listRef} className="relative grow">
-            <List
-              outerElementType={"ul"}
-              itemKey={(index) => questions[index].id}
-              outerRef={outerRef}
-              height={listHeight}
-              width={"w-full"}
-              itemCount={questions.length}
-              itemSize={100}
-              itemData={questions}
-              overscanCount={2}
-            >
-              {Row}
-            </List>
-          </div>
-        ) : null}
+    <>
+      <div className="flex py-1" style={{ marginRight: scrollbarWidth }}>
+        <div className="basis-2/3 grow-0 text-xs">Question</div>
+        <div className="basis-1/3 px-2  grow-0 text-xs">Unit</div>
       </div>
-    </div>
+      {questions.length ? (
+        <div id={`questions-list`} ref={listRef} className="relative grow">
+          <List
+            outerElementType={"ul"}
+            itemKey={(index) => filteredQuestions[index].id}
+            outerRef={outerRef}
+            height={listHeight}
+            width={"w-full"}
+            itemCount={filteredQuestions.length}
+            itemSize={100}
+            itemData={filteredQuestions}
+            overscanCount={2}
+          >
+            {Row}
+          </List>
+        </div>
+      ) : null}
+    </>
   );
-};
+});
 
 const Row = ({ data, index, style }: ListChildComponentProps<Question[]>) => {
   const bgColor = index % 2 === 0 ? "bg-black/[5%]" : "transparent";
@@ -251,3 +306,21 @@ const TipTapName = ({ content }: { content: string }) => {
     </div>
   );
 };
+
+function filter({
+  query,
+  questions,
+}: {
+  query: string;
+  questions: Question[];
+}) {
+  query = query.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  const regex = new RegExp(query, "i");
+  return questions.filter((question) => {
+    return (
+      regex.test(question.lesson.unit.name) ||
+      regex.test(question.lesson.name) ||
+      regex.test(question.text)
+    );
+  });
+}
