@@ -27,7 +27,11 @@ import {
   action as questionAction,
 } from "./routes/Question";
 import { NewQuestion, action as newQuestionAction } from "./routes/NewQuestion";
-import { NewExam } from "./routes/NewExam";
+import { Exam, loader as newExamLoader } from "./routes/Exam";
+import {
+  ExamQuestionList,
+  loader as examUnitTabsLoader,
+} from "./routes/ExamQuestionList";
 
 const router = createMemoryRouter(
   [
@@ -37,9 +41,18 @@ const router = createMemoryRouter(
       errorElement: <Error />,
       children: [
         {
-          path: "exams/new",
-          element: <NewExam />,
+          path: "/exams/courses",
+          element: <Exam />,
           errorElement: <Error />,
+          loader: newExamLoader,
+          children: [
+            {
+              path: "/exams/courses/:courseId/*",
+              element: <ExamQuestionList />,
+              errorElement: <Error />,
+              loader: examUnitTabsLoader,
+            },
+          ],
         },
         {
           path: "/courses",

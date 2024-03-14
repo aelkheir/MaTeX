@@ -24,6 +24,20 @@ const fetchQuestion = async (
     .getOneOrFail();
 };
 
+const fetchCourseQuestion = async (
+  _: Electron.IpcMainInvokeEvent,
+  courseId: number
+): Promise<Question[]> => {
+  const repository = Question.getRepository();
+  return await repository
+    .createQueryBuilder("question")
+    .leftJoinAndSelect("question.lesson", "lesson")
+    .leftJoinAndSelect("lesson.unit", "unit")
+    .leftJoinAndSelect("unit.course", "course")
+    .where("course.id = :courseId", { courseId })
+    .getMany();
+};
+
 const fetchLessonQuestions = async (
   _: Electron.IpcMainInvokeEvent,
   lessonId: number
@@ -56,6 +70,7 @@ const deleteQuestion = async (
 export const setUpQuestionAPI = () => {
   ipcMain.handle("add-question", addQuestion);
   ipcMain.handle("fetch-question", fetchQuestion);
+  ipcMain.handle("fetch-course-questions", fetchCourseQuestion);
   ipcMain.handle("edit-question", editQuestion);
   ipcMain.handle("delete-question", deleteQuestion);
   ipcMain.handle("fetch-lesson-questions", fetchLessonQuestions);

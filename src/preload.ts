@@ -72,6 +72,9 @@ const electronHandler = {
   deleteQuestion(questionId: number | string): Promise<unknown> {
     return ipcRenderer.invoke("delete-question", questionId);
   },
+  fetchCourseQuestions(courseId: number): Promise<Question[]> {
+    return ipcRenderer.invoke("fetch-course-questions", courseId);
+  },
 };
 
 contextBridge.exposeInMainWorld("electron", electronHandler);

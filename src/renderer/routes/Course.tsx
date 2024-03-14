@@ -44,24 +44,11 @@ import {
 import { Course as CourseModel, Level } from "../../main/entities";
 import { Controller, useForm } from "react-hook-form";
 import { useRef } from "react";
-
-function groupBy(courses: CourseModel[], cb: (course: CourseModel) => string) {
-  const result: { name: string; courses: CourseModel[] }[] = [];
-  for (const course of courses) {
-    const key = cb(course);
-    let group = result.find((group) => group.name === key);
-    if (!group) {
-      group = { name: key, courses: [] };
-      result.push(group);
-    }
-    group.courses.push(course);
-  }
-  return result;
-}
+import { groupCoursesByLevel } from "../helpers";
 
 export async function loader() {
   const courses = await window.electron.fetchCourses();
-  const courseGroups = groupBy(courses, (course) =>
+  const courseGroups = groupCoursesByLevel(courses, (course) =>
     course.level ? course.level.name : ""
   );
   const levels = await window.electron.fetchLevels();
@@ -104,7 +91,7 @@ export const Course = () => {
         <div className="px-2 py-2 ">
           <NavLink
             className="px-2 cursor-default shrink-0 flex items-center text-ref-primary-100 text-sm"
-            to={"/exams/new"}
+            to={"/exams/courses"}
           >
             Create Exam
           </NavLink>
@@ -263,12 +250,12 @@ const CourseSelect = ({
 
   return (
     <Select
-      className="grow flex flex-col gap-1"
       placeholder="Select a course or create one"
       selectedKey={params.courseId || -1}
       onSelectionChange={(key) => {
         navigate(`/courses/${key}`);
       }}
+      className="grow flex flex-col gap-1"
     >
       <Label className="text-white cursor-default text-xs">Course</Label>
       <Button className="h-8 flex items-center cursor-default border-0 bg-white bg-opacity-90 pressed:bg-opacity-100 py-1 p-2 text-xs text-left text-gray-700">

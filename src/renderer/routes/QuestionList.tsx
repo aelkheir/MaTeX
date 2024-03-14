@@ -201,11 +201,11 @@ const TipTapHeader: React.FC<{ lesson: Lesson }> = ({ lesson }) => {
   return <EditorContent editor={editor} className="h-full text-on-surface" />;
 };
 
-const TipTapNav: React.FC<ListChildComponentProps<Question[]>> = ({
+const TipTapNav = ({
   data,
   index,
   style,
-}) => {
+}: ListChildComponentProps<Question[]>) => {
   const { id, text } = data[index];
   const editor = useEditor(
     {
