@@ -5,7 +5,6 @@ import { Paragraph } from "@tiptap/extension-paragraph";
 import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
 import {
   LoaderFunctionArgs,
-  NavLink,
   Outlet,
   useLoaderData,
   useLocation,
@@ -20,17 +19,31 @@ import { TableRow as TipTapTableRow } from "@tiptap/extension-table-row";
 import { TableHeader as TipTapTableHeader } from "@tiptap/extension-table-header";
 import { Table as TipTapTable } from "@tiptap/extension-table";
 import { Question } from "../../main/entities";
-import { memo, useDeferredValue, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  memo,
+  useContext,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useElementScrollRestoration } from "../hooks/useElementScrollRestoration";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import {
   Button,
+  Checkbox,
   Group,
   Input,
   Label,
   SearchField,
 } from "react-aria-components";
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import {
+  DocumentIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const questions = await window.electron.fetchCourseQuestions(
@@ -69,8 +82,18 @@ export const ExamQuestionList = () => {
           </Group>
         </SearchField>
       </div>
-      <div className="col-start-1 col-span-2 row-start-2 w-full h-full flex flex-col pl-4">
+      <div className="relative col-start-1 col-span-2 row-start-2 w-full h-full flex flex-col pl-4">
         <QuestionList questions={questions} deferredQuery={deferredQuery} />
+        <div className="absolute bottom-10 right-10">
+          <Button
+            className={
+              "flex gap-1 p-2 items-center bg-primary text-on-primary shadow-lg text-lg"
+            }
+          >
+            Generate
+            <DocumentIcon className="w-6 h-6" />
+          </Button>
+        </div>
       </div>
       <Outlet />
     </>
@@ -148,17 +171,88 @@ const QuestionList = memo(function QuestionList({
     questions.length,
   ]);
 
-  console.time("filter array");
-  const filteredQuestions = deferredQuery
-    ? filter({ query: deferredQuery, questions })
-    : questions;
-  console.timeEnd("filter array");
+  const filteredQuestions = useMemo(
+    () =>
+      deferredQuery ? filter({ query: deferredQuery, questions }) : questions,
+    [deferredQuery, questions]
+  );
+
+  const [selections, setSelections] = useState(new Set<number>());
+  const isAllSelected = filteredQuestions.every((q) => selections.has(q.id));
+
+  function handleSelection(): void {
+    // handle indeterminate state and empty
+    const newSet = new Set(selections);
+    if (!isAllSelected) {
+      filteredQuestions.every((q) => newSet.add(q.id));
+      setSelections(newSet);
+
+      // handle all selected state
+    } else if (isAllSelected) {
+      filteredQuestions.every((q) => newSet.delete(q.id));
+      setSelections(newSet);
+    }
+  }
 
   return (
-    <>
-      <div className="flex py-1" style={{ marginRight: scrollbarWidth }}>
+    <SelectionContext.Provider value={{ selections, setSelections }}>
+      <div
+        className="flex py-1 items-center"
+        style={{ marginRight: scrollbarWidth }}
+      >
+        <div className="flex items-center p-2">
+          <Checkbox
+            className={"flex items-center forced-color-adjust-none"}
+            isSelected={isAllSelected}
+            isIndeterminate={
+              !isAllSelected &&
+              filteredQuestions.some((q) => selections.has(q.id))
+            }
+            onChange={handleSelection}
+          >
+            {({ isIndeterminate, isSelected, isPressed, isFocusVisible }) => (
+              <div
+                className={`checkbox h-4 w-4 border flex justify-center items-center ${
+                  isPressed ? "border-outline" : ""
+                } ${
+                  isFocusVisible ? "ring-1 ring-blue-600 ring-offset-1" : ""
+                } ${
+                  isSelected || isIndeterminate
+                    ? isPressed
+                      ? "bg-blue-600 border-blue-600"
+                      : "bg-blue-500 border-blue-500"
+                    : "border-on-background"
+                }`}
+              >
+                {isIndeterminate ? (
+                  // Render a subtract (-) symbol for the indeterminate state
+                  <svg
+                    viewBox="0 0 18 18"
+                    aria-hidden="true"
+                    className="w-4 h-4 fill-white"
+                  >
+                    <rect x="3" y="8" width="12" height="2" />
+                  </svg>
+                ) : (
+                  // Render the checkmark for the selected state
+                  <svg
+                    viewBox="0 0 18 18"
+                    aria-hidden="true"
+                    className={`w-4 h-4 stroke-white [stroke-dasharray:22px] ${
+                      isSelected
+                        ? "[stroke-dashoffset:44px]"
+                        : "[stroke-dashoffset:66px]"
+                    } stroke-[3px] fill-none`}
+                  >
+                    <polyline points="1 9 7 14 15 4" />
+                  </svg>
+                )}
+              </div>
+            )}
+          </Checkbox>
+        </div>
         <div className="basis-2/3 grow-0 text-xs">Question</div>
-        <div className="basis-1/3 px-2  grow-0 text-xs">Unit</div>
+        <div className="basis-1/3 pl-4  grow-0 text-xs">Unit</div>
       </div>
       {questions.length ? (
         <div id={`questions-list`} ref={listRef} className="relative grow">
@@ -177,20 +271,98 @@ const QuestionList = memo(function QuestionList({
           </List>
         </div>
       ) : null}
-    </>
+    </SelectionContext.Provider>
   );
 });
 
+const SelectionContext = createContext<{
+  selections: Set<number>;
+  setSelections: React.Dispatch<React.SetStateAction<Set<number>>>;
+}>({
+  selections: new Set(),
+  setSelections() {
+    return null;
+  },
+});
+
 const Row = ({ data, index, style }: ListChildComponentProps<Question[]>) => {
+  const { selections, setSelections } = useContext(SelectionContext);
   const bgColor = index % 2 === 0 ? "bg-black/[5%]" : "transparent";
+  const selectedBgColor = selections.has(data[index].id) ? "bg-blue-100" : "";
+
+  function toggleSelection() {
+    const isSelected = selections.has(data[index].id);
+    if (isSelected) {
+      const newSelections = new Set(selections);
+      newSelections.delete(data[index].id);
+      setSelections(newSelections);
+    } else {
+      setSelections(new Set(selections).add(data[index].id));
+    }
+  }
+
   return (
-    <div className={`flex w-full ${bgColor}`} style={style}>
-      <div className="basis-2/3 grow-0 overflow-hidden text-sm">
-        <TipTapQuestion data={data} index={index} />
-      </div>
-      <div className="basis-1/3 grow-0 flex flex-col text-xs p-2">
-        <TipTapName content={data[index].lesson.unit.name} />
-        <TipTapName content={data[index].lesson.name} />
+    <div
+      className={`flex w-full ${bgColor}`}
+      style={style}
+      onClick={toggleSelection}
+      role="button"
+    >
+      <div className={`flex w-full ${selectedBgColor}`}>
+        <div className="flex items-center p-2">
+          <Checkbox
+            className={"flex items-center forced-color-adjust-none"}
+            isSelected={selections.has(data[index].id)}
+            onChange={(isSelected) => {
+              if (isSelected)
+                setSelections(new Set(selections).add(data[index].id));
+              else {
+                const newSelections = new Set(selections);
+                newSelections.delete(data[index].id);
+                setSelections(newSelections);
+              }
+            }}
+          >
+            {({ isIndeterminate, isSelected, isPressed, isFocusVisible }) => (
+              <div
+                className={`checkbox h-4 w-4 border flex justify-center items-center ${
+                  isPressed ? "border-outline" : ""
+                } ${
+                  isFocusVisible ? "ring-1 ring-blue-600 ring-offset-1" : ""
+                } ${
+                  isSelected || isIndeterminate
+                    ? isPressed
+                      ? "bg-blue-600 border-blue-600"
+                      : "bg-blue-500 border-blue-500"
+                    : "border-on-background"
+                }`}
+              >
+                <svg
+                  viewBox="0 0 18 18"
+                  aria-hidden="true"
+                  style={{
+                    strokeDashoffset: isSelected || isIndeterminate ? 44 : 66,
+                    strokeDasharray: 22,
+                  }}
+                  className={`w-4 h-4 stroke-white ${
+                    isIndeterminate
+                      ? "stroke-none fill-white"
+                      : "stroke-[3px] fill-none"
+                  } `}
+                >
+                  <polyline points="1 9 7 14 15 4" />
+                </svg>
+              </div>
+            )}
+          </Checkbox>
+        </div>
+        <div className="basis-2/3 grow-0 overflow-hidden text-sm">
+          <TipTapQuestion data={data} index={index} />
+        </div>
+        <div className="basis-1/3 grow-0 flex flex-col text-xs p-2">
+          <TipTapName content={data[index].lesson.unit.name} />
+          <TipTapName content={data[index].lesson.name} />
+        </div>
       </div>
     </div>
   );
@@ -257,10 +429,8 @@ const TipTapQuestion = ({
 
   return (
     <div className="w-full h-full px-4 py-2">
-      <NavLink
-        draggable={false}
+      <div
         id={`q-${id}`}
-        to={`questions/${id}`}
         className={`w-full h-full flex flex-col items-center text-outline
         cursor-default`}
       >
@@ -270,7 +440,7 @@ const TipTapQuestion = ({
           contentEditable={false}
           className={`h-full w-full overflow-clip text-on-surface `}
         />
-      </NavLink>
+      </div>
     </div>
   );
 };
