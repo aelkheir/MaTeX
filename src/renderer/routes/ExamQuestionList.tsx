@@ -1,11 +1,10 @@
 import { EditorContent, useEditor } from "@tiptap/react";
-import { Document } from "@tiptap/extension-document";
+import { Document as TipTapDocument } from "@tiptap/extension-document";
 import { Text } from "@tiptap/extension-text";
 import { Paragraph } from "@tiptap/extension-paragraph";
 import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
 import {
   LoaderFunctionArgs,
-  Outlet,
   useLoaderData,
   useLocation,
   useParams,
@@ -44,6 +43,11 @@ import {
   MagnifyingGlassIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
+import { pdfjs, Document, Page } from "react-pdf";
+import {
+  DocumentCallback,
+  OnLoadProgressArgs,
+} from "react-pdf/dist/cjs/shared/types";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const questions = await window.electron.fetchCourseQuestions(
@@ -56,9 +60,18 @@ export const ExamQuestionList = () => {
   const { questions } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
+  const [selections, setSelections] = useState(new Set<number>());
+
+  const [pdf, setPDF] = useState<Uint8Array>(null);
+  const [pdfError, setPDFError] = useState(null);
+  const [fetchData, setFetchData] = useState<{
+    pdf: Uint8Array | null;
+    error: boolean;
+    isPending: boolean;
+  }>({ pdf: null, error: false, isPending: false });
 
   return (
-    <>
+    <SelectionContext.Provider value={{ selections, setSelections }}>
       <div className="pl-4 col-start-2 row-start-1 w-full h-full">
         <SearchField
           className={"w-full flex flex-col gap-1 [&[data-empty]_button]:hidden"}
@@ -66,7 +79,7 @@ export const ExamQuestionList = () => {
           onChange={setQuery}
         >
           <Label className="text-xs">Search</Label>
-          <Group className="h-8 flex items-center bg-gray-300 grow outline-none border-b-2 border-transparent focus-within:border-primary bg-black/5">
+          <Group className="h-8 flex items-center grow outline-none border-b-2 border-transparent focus-within:border-primary bg-black/5">
             <span className="p-1">
               <MagnifyingGlassIcon className="w-4 h-4 text-on-background" />
             </span>
@@ -86,6 +99,31 @@ export const ExamQuestionList = () => {
         <QuestionList questions={questions} deferredQuery={deferredQuery} />
         <div className="absolute bottom-10 right-10">
           <Button
+            onPress={() => {
+              if (fetchData.isPending) return;
+              setFetchData({
+                isPending: true,
+                pdf: null,
+                error: false,
+              });
+              window.electron
+                .createExam(selections)
+                .then((pdf) => {
+                  setFetchData({
+                    pdf: pdf,
+                    isPending: false,
+                    error: false,
+                  });
+                })
+                .catch((err) => {
+                  console.error(err);
+                  setFetchData({
+                    pdf: null,
+                    isPending: false,
+                    error: true,
+                  });
+                });
+            }}
             className={
               "flex gap-1 p-2 items-center bg-primary text-on-primary shadow-lg text-lg"
             }
@@ -95,8 +133,79 @@ export const ExamQuestionList = () => {
           </Button>
         </div>
       </div>
-      <Outlet />
-    </>
+      <div className="col-start-3 row-start-1 row-span-2 overflow-auto flex flex-col">
+        {fetchData.pdf && <PDFViewr pdf={fetchData.pdf} />}
+        {(fetchData.isPending || fetchData.error) && (
+          <div className="w-full grow flex justify-center items-center text-xs italic">
+            {fetchData.isPending && (
+              <span className="text-on-background">generating pdf</span>
+            )}
+            {fetchData.error && (
+              <span className="text-error">Oops, something went wrong</span>
+            )}
+          </div>
+        )}
+      </div>
+    </SelectionContext.Provider>
+  );
+};
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.js",
+  // @ts-ignore
+  import.meta.url
+).toString();
+
+const PDFViewr = ({ pdf }: { pdf: Uint8Array }) => {
+  const [numPages, setNumPages] = useState(null);
+  const data = useMemo(() => ({ data: pdf }), [pdf]);
+
+  function onDocumentLoadSuccess({ numPages }: DocumentCallback) {
+    setNumPages(numPages);
+  }
+
+
+  
+  return (
+    <div className="[&_.react-pdf\_\_message]:h-full w-full h-full">
+      <Document
+        file={data}
+        onLoadSuccess={onDocumentLoadSuccess}
+        loading={PDFLoading}
+        error={PDFError}
+        className='w-full h-full'
+        
+      >
+        {Array.from(new Array(numPages), (el, index) => (
+          <Page
+            key={`page_${index + 1}`}
+            pageNumber={index + 1}
+            loading={null}
+          />
+        ))}
+      </Document>
+    </div>
+  );
+};
+
+<div id="container">
+  <div className="foo"></div>
+</div>;
+
+const PDFError = () => {
+  return (
+    <div className="w-full h-full flex items-center justify-center text-xs italic text-error">
+      <span>Error loading pdf</span>
+    </div>
+  );
+};
+
+const PDFLoading = () => {
+
+  return (
+    <div className="w-full h-full flex items-center justify-center text-xs italic">
+      <span>Loadeing</span>
+    </div>
   );
 };
 
@@ -177,7 +286,8 @@ const QuestionList = memo(function QuestionList({
     [deferredQuery, questions]
   );
 
-  const [selections, setSelections] = useState(new Set<number>());
+  const { selections, setSelections } = useContext(SelectionContext);
+
   const isAllSelected = filteredQuestions.every((q) => selections.has(q.id));
 
   function handleSelection(): void {
@@ -195,7 +305,7 @@ const QuestionList = memo(function QuestionList({
   }
 
   return (
-    <SelectionContext.Provider value={{ selections, setSelections }}>
+    <>
       <div
         className="flex py-1 items-center"
         style={{ marginRight: scrollbarWidth }}
@@ -271,7 +381,7 @@ const QuestionList = memo(function QuestionList({
           </List>
         </div>
       ) : null}
-    </SelectionContext.Provider>
+    </>
   );
 });
 
@@ -382,7 +492,7 @@ const TipTapQuestion = ({
       },
     },
     extensions: [
-      Document,
+      TipTapDocument,
       Text,
       InlineLatex,
       DisplayLatex,
@@ -454,7 +564,7 @@ const TipTapName = ({ content }: { content: string }) => {
       },
     },
     extensions: [
-      Document.extend({
+      TipTapDocument.extend({
         content: "block",
       }),
       Text,

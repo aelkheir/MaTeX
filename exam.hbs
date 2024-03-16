@@ -1,0 +1,34 @@
+\documentclass[12pt, a4paper]{exam}
+\usepackage[english]{babel}
+\usepackage{amstext}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[shortlabels]{enumitem}
+
+\thispagestyle{headandfoot}
+
+\extraheadheight{.3in}
+
+\lhead{\ifcontinuation{Question \ContinuedQuestion\ contiues \ldots}{Exercise}}
+\chead[\large Additional Mathematics \\ {{title}} ]{}
+\rhead[\today]{ {{title}} }
+\runningheadrule
+
+\footrule
+\lfoot{\ifincomplete{Question \IncompleteQuestion\ contiues \ldots}{}}
+\cfoot{Page \thepage\ of \numpages}
+\rfoot{\iflastpage{End of exercise}{} }
+
+\begin{document}
+
+\begin{questions}
+
+{{#each questions}}
+{{latex}}
+\vspace{1em}
+{{/each}}
+
+\end{questions}
+\end{document}

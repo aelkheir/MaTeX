@@ -75,6 +75,8 @@ const electronHandler = {
   fetchCourseQuestions(courseId: number): Promise<Question[]> {
     return ipcRenderer.invoke("fetch-course-questions", courseId);
   },
+  createExam: (selection: Set<number>) =>
+    ipcRenderer.invoke("create-exam", selection),
 };
 
 contextBridge.exposeInMainWorld("electron", electronHandler);

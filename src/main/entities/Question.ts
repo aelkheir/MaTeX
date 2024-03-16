@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   BaseEntity,
   ManyToOne,
+  AfterLoad,
 } from "typeorm";
 import { Lesson } from "./Lesson";
+import { docToLatex } from "../helpers";
 
 @Entity("questions")
 export class Question extends BaseEntity {
@@ -19,4 +21,11 @@ export class Question extends BaseEntity {
     onDelete: "CASCADE",
   })
   lesson: Lesson;
+
+  latex: string;
+
+  @AfterLoad()
+  setComputed() {
+    this.latex = docToLatex(JSON.parse(this.text));
+  }
 }

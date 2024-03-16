@@ -28,6 +28,10 @@
 
 import "tailwindcss/tailwind.css";
 import "katex/dist/katex.min.css";
+// eslint-disable-next-line import/no-unresolved
+import "react-pdf/dist/Page/TextLayer.css";
+// eslint-disable-next-line import/no-unresolved
+import "react-pdf/dist/Page/AnnotationLayer.css";
 import "./index.css";
 import { createRoot } from "react-dom/client";
 import App from "./App";

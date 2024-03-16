@@ -9,7 +9,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     icon: "src/images/app-icon",
     asar: true,
-    extraResource: ["database.db"],
+    extraResource: ["database.db", "exam.hbs"],
   },
   rebuildConfig: {},
   makers: [
