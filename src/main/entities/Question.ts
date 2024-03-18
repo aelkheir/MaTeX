@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { Lesson } from "./Lesson";
 import { docToLatex } from "../helpers";
+import { Unit } from "./Unit";
 
 @Entity("questions")
 export class Question extends BaseEntity {
@@ -19,8 +20,18 @@ export class Question extends BaseEntity {
 
   @ManyToOne(() => Lesson, (lesson) => lesson.questions, {
     onDelete: "CASCADE",
+    nullable: true,
   })
-  lesson: Lesson;
+  lesson: Lesson | null;
+
+  @ManyToOne(() => Unit, (unit) => unit.questions, {
+    onDelete: "CASCADE",
+    nullable: true,
+  })
+  unit: Unit | null;
+
+  @Column("boolean", { default: false })
+  pastPaper: boolean;
 
   latex: string;
 

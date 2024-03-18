@@ -59,7 +59,11 @@ const parseInlineLatex = (inlineLatexNode: JSONContent) => {
 const parseDisplayLatex = (DisplayLatexNode: JSONContent) => {
   const code = DisplayLatexNode.attrs?.code;
   if (!String(code).trim()) return "";
-  return `\\begin{equation}\n${code}\n\\end{equation}`;
+  if (code.includes("\\begin{align}") || code.includes("\\begin{align*}")) {
+    return code; // Return the code as-is, without wrapping in 'equation'
+  } else {
+    return `\\begin{equation}\n${code}\n\\end{equation}`;
+  }
 };
 
 const parseOrderdList = (orderListNode: JSONContent) => {
@@ -69,11 +73,11 @@ const parseOrderdList = (orderListNode: JSONContent) => {
     content += `  ${parseNode(node)}${newLine}`;
   });
   if (!content.trim()) return "";
-  const isVertical = orderListNode.attrs.orientation === "vertical";
+  const isVertical = orderListNode.attrs?.orientation === "vertical";
   let layout = "";
   if (isVertical) {
     layout =
-      `\\begin{multicols}{${orderListNode.attrs.gridCols}}\n` +
+      `\\begin{multicols}{${orderListNode.attrs?.gridCols}}\n` +
       `${content}` +
       "\n\\end{multicols}";
   }

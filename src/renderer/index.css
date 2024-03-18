@@ -101,11 +101,11 @@
   }
 
   .tiptap ol ol {
-    list-style: decimal;
+    list-style: lower-roman;
   }
 
   .tiptap ol ol ol {
-    list-style: lower-roman;
+    list-style: decimal;
   }
 
   .tiptap table {

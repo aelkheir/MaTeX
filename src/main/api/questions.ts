@@ -31,10 +31,25 @@ const fetchCourseQuestion = async (
   const repository = Question.getRepository();
   return await repository
     .createQueryBuilder("question")
+    .leftJoinAndSelect("question.unit", "q_unit")
     .leftJoinAndSelect("question.lesson", "lesson")
-    .leftJoinAndSelect("lesson.unit", "unit")
-    .leftJoinAndSelect("unit.course", "course")
-    .where("course.id = :courseId", { courseId })
+    .leftJoinAndSelect("lesson.unit", "l_unit")
+    .leftJoinAndSelect("q_unit.course", "q_course")
+    .leftJoinAndSelect("l_unit.course", "l_course")
+    .where("q_course.id = :courseId", { courseId })
+    .orWhere("l_course.id = :courseId", { courseId })
+    .getMany();
+};
+
+const fetchGeneralUnitQuestions = async (
+  _: Electron.IpcMainInvokeEvent,
+  unitId: number
+): Promise<Question[]> => {
+  const repository = Question.getRepository();
+  return await repository
+    .createQueryBuilder("question")
+    .leftJoinAndSelect("question.unit", "unit")
+    .where("unit.id = :unitId", { unitId })
     .getMany();
 };
 
@@ -74,4 +89,5 @@ export const setUpQuestionAPI = () => {
   ipcMain.handle("edit-question", editQuestion);
   ipcMain.handle("delete-question", deleteQuestion);
   ipcMain.handle("fetch-lesson-questions", fetchLessonQuestions);
+  ipcMain.handle("fetch-general-unit-questions", fetchGeneralUnitQuestions);
 };

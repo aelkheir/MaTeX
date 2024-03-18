@@ -1,10 +1,11 @@
 import { wrappingInputRule } from "@tiptap/core";
 import { OrderedList as TOrderedList } from "@tiptap/extension-ordered-list";
+import { Attributes } from "@tiptap/react";
 
 const inputRegex = /^\s*(\d+)\.\s$/;
 export const OrderedList = TOrderedList.extend({
   addAttributes() {
-    const parent = this.parent?.();
+    const parent: Attributes = this.parent?.();
 
     return {
       ...parent,

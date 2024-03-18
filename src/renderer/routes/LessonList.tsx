@@ -18,6 +18,7 @@ import {
   Unit as UnitModel,
   Lesson as LessonModel,
   Unit,
+  Lesson,
 } from "../../main/entities";
 import { InlineLatex } from "../components/tiptap/LatexNode";
 import {
@@ -77,10 +78,33 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
+const general: unknown = {
+  id: -99.99,
+  name: JSON.stringify({
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: "General",
+          },
+        ],
+      },
+    ],
+  }),
+};
+
 export const LessonList = () => {
   const { unit } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const navigate = useNavigate();
   const params = useParams();
+
+  const lessonList = [...unit.lessons];
+  if (unit.questions.length) {
+    lessonList.unshift(general as Lesson);
+  }
 
   return (
     <>
@@ -99,7 +123,7 @@ export const LessonList = () => {
               aria-label="Lessons list"
               selectionMode="single"
               disallowEmptySelection={true}
-              items={unit.lessons}
+              items={lessonList}
               selectedKeys={[Number(params.lessonId) || -1]}
               onSelectionChange={(keys) => {
                 const currentKey = Array.from(keys)[0];

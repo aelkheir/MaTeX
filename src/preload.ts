@@ -75,6 +75,9 @@ const electronHandler = {
   fetchCourseQuestions(courseId: number): Promise<Question[]> {
     return ipcRenderer.invoke("fetch-course-questions", courseId);
   },
+  fetchGeneralUnitQuestions(unitId: number): Promise<Question[]> {
+    return ipcRenderer.invoke("fetch-general-unit-questions", unitId);
+  },
   createExam: (selection: Set<number>) =>
     ipcRenderer.invoke("create-exam", selection),
 };

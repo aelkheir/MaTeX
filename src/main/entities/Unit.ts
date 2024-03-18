@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { Lesson } from "./Lesson";
 import { Course } from "./Course";
+import { Question } from "./Question";
 
 @Entity("units")
 export class Unit extends BaseEntity {
@@ -19,6 +20,9 @@ export class Unit extends BaseEntity {
 
   @OneToMany(() => Lesson, (lesson) => lesson.unit)
   lessons: Lesson[];
+
+  @OneToMany(() => Question, (question) => question.unit)
+  questions: Question[];
 
   @ManyToOne(() => Course, (course) => course.units, { onDelete: "CASCADE" })
   course: Course;

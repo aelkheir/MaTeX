@@ -36,7 +36,7 @@ export const LatexNodeView = ({
   });
 
   const containerStyles = display
-    ? "flex justify-center w-11/12 mx-auto"
+    ? "flex w-11/12 mx-auto"
     : `inline-flex items-center w-auto`;
 
   return (
@@ -62,11 +62,16 @@ export const LatexNodeView = ({
             updateAttributes({ formOpen: isOpen });
           }}
         >
-          <Button excludeFromTabOrder>
+          <Button
+            excludeFromTabOrder
+            className={
+              "flex justify-center w-full pressed:border border-on-background outline-none"
+            }
+          >
             {node.attrs.code ? (
               <span
                 dangerouslySetInnerHTML={{ __html: html }}
-                className={`text-inherit flex`}
+                className={`text-inherit`}
               />
             ) : (
               <span className={`italic text-center text-xs`}>

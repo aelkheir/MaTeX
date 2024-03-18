@@ -44,10 +44,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { pdfjs, Document, Page } from "react-pdf";
-import {
-  DocumentCallback,
-  OnLoadProgressArgs,
-} from "react-pdf/dist/cjs/shared/types";
+import { DocumentCallback } from "react-pdf/dist/cjs/shared/types";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const questions = await window.electron.fetchCourseQuestions(
@@ -62,8 +59,6 @@ export const ExamQuestionList = () => {
   const deferredQuery = useDeferredValue(query);
   const [selections, setSelections] = useState(new Set<number>());
 
-  const [pdf, setPDF] = useState<Uint8Array>(null);
-  const [pdfError, setPDFError] = useState(null);
   const [fetchData, setFetchData] = useState<{
     pdf: Uint8Array | null;
     error: boolean;
@@ -164,8 +159,6 @@ const PDFViewr = ({ pdf }: { pdf: Uint8Array }) => {
     setNumPages(numPages);
   }
 
-
-  
   return (
     <div className="[&_.react-pdf\_\_message]:h-full w-full h-full">
       <Document
@@ -173,8 +166,7 @@ const PDFViewr = ({ pdf }: { pdf: Uint8Array }) => {
         onLoadSuccess={onDocumentLoadSuccess}
         loading={PDFLoading}
         error={PDFError}
-        className='w-full h-full'
-        
+        className="w-full h-full"
       >
         {Array.from(new Array(numPages), (el, index) => (
           <Page
@@ -201,7 +193,6 @@ const PDFError = () => {
 };
 
 const PDFLoading = () => {
-
   return (
     <div className="w-full h-full flex items-center justify-center text-xs italic">
       <span>Loadeing</span>
@@ -470,8 +461,16 @@ const Row = ({ data, index, style }: ListChildComponentProps<Question[]>) => {
           <TipTapQuestion data={data} index={index} />
         </div>
         <div className="basis-1/3 grow-0 flex flex-col text-xs p-2">
-          <TipTapName content={data[index].lesson.unit.name} />
-          <TipTapName content={data[index].lesson.name} />
+          <TipTapName
+            content={
+              data[index].lesson
+                ? data[index].lesson.unit.name
+                : data[index].unit.name
+            }
+          />
+          {data[index].lesson ? (
+            <TipTapName content={data[index].lesson.name} />
+          ) : null}
         </div>
       </div>
     </div>

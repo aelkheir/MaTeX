@@ -1,7 +1,10 @@
-import { Node, mergeAttributes, nodeInputRule } from "@tiptap/core";
-import { nodePasteRule, ReactNodeViewRenderer } from "@tiptap/react";
+import { Node, nodeInputRule } from "@tiptap/core";
+import {
+  Attributes,
+  nodePasteRule,
+  ReactNodeViewRenderer,
+} from "@tiptap/react";
 import { LatexNodeView } from "./LatexNodeView";
-import Paragraph from "@tiptap/extension-paragraph";
 
 // Must be extended to add the new node type [either Inline or Display]
 export const LatexNode = Node.create({
@@ -12,6 +15,8 @@ export const LatexNode = Node.create({
     code: {
       default: "",
     },
+    // this should exist on subclasses of this extenstion
+    // will leave it here temporarily to to keep attrs sorted
     display: {
       default: false,
     },
@@ -58,13 +63,24 @@ export const LatexNode = Node.create({
   },
 });
 
-const inlineInputRule = /(?:^\$|\s\$)([^\$]+)(?:\$$|\$\s)/gs;
-const inlinePastRule = /(\$([^\$]+?)\$)/g;
+const inlineInputRule = /(?:^\$|\s\$)([^$]+)(?:\$$|\$\s)/gs;
+const inlinePastRule = /(\$([^$]+?)\$)/g;
 
 export const InlineLatex = LatexNode.extend({
   name: "inlineLatex",
   group: "inline",
   inline: true,
+
+  addAttributes() {
+    const parent = this.parent?.();
+
+    return {
+      ...parent,
+      display: {
+        default: false,
+      },
+    };
+  },
 
   parseHTML() {
     return [
@@ -110,7 +126,7 @@ export const InlineLatex = LatexNode.extend({
       nodePasteRule({
         find: inlinePastRule,
         type: this.type,
-        getAttributes: (match: any) => {
+        getAttributes: (match) => {
           return {
             code: match[2],
           };
@@ -120,13 +136,24 @@ export const InlineLatex = LatexNode.extend({
   },
 });
 
-const displayInputRule = /(\$\$([^\$]+)\$\$)/g;
-const displayPastRule = /(\$\$([^\$]*?)\$\$)/g;
+const displayInputRule = /(\$\$([^$]+)\$\$)/g;
+const displayPastRule = /(\$\$([^$]*?)\$\$)/g;
 
 export const DisplayLatex = LatexNode.extend({
   name: "displayLatex",
   group: "block",
   inline: false,
+
+  addAttributes() {
+    const parent: object | Attributes = this.parent?.();
+
+    return {
+      ...parent,
+      display: {
+        default: true,
+      },
+    };
+  },
 
   parseHTML() {
     return [
@@ -163,7 +190,7 @@ export const DisplayLatex = LatexNode.extend({
       nodePasteRule({
         find: displayPastRule,
         type: this.type,
-        getAttributes: (match: any) => {
+        getAttributes: (match) => {
           return {
             code: match[2],
             formOpen: false,

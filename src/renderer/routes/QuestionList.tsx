@@ -73,8 +73,35 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
+const general: unknown = {
+  id: -99.99,
+  name: JSON.stringify({
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: "General",
+          },
+        ],
+      },
+    ],
+  }),
+};
+
 export async function loader({ params }: LoaderFunctionArgs) {
-  const lesson = await window.electron.fetchLesson(Number(params.lessonId));
+  let lesson: Lesson;
+  if (Number(params.lessonId) !== -99.99) {
+    lesson = await window.electron.fetchLesson(Number(params.lessonId));
+  } else {
+    const generalUnitQuestions =
+      await window.electron.fetchGeneralUnitQuestions(Number(params.unitId));
+    lesson = Object.assign(general, {
+      questions: generalUnitQuestions,
+    }) as Lesson;
+  }
   return { lesson };
 }
 

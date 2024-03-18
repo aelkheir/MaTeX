@@ -107,9 +107,7 @@ const create = (title: string, questions: Promise<Question[]>) => {
                 latex.on("error", (err) => {
                   texFileCleanup();
                   dirCleanup();
-                  reject(
-                    "something went wrong: latex failed make sure it is installed and on path"
-                  );
+                  reject("latext error: " + err.message);
                 });
 
                 latex.on("disconnect", () => {

@@ -16,6 +16,7 @@ const fetchUnit = (_: Electron.IpcMainInvokeEvent, unitId: number) => {
     .createQueryBuilder("unit")
     .where("unit.id = :unitId", { unitId })
     .leftJoinAndSelect("unit.lessons", "lessons")
+    .leftJoinAndSelect("unit.questions", "questions")
     .getOneOrFail();
 };
 
