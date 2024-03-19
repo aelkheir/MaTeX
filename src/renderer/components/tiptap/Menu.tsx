@@ -142,7 +142,7 @@ export const Menu: React.FC<MenuProps> = ({ editor }) => {
       </MenuButton>
       <NumberField
         minValue={2}
-        maxValue={4}
+        maxValue={5}
         step={1}
         aria-label="Number of columns in list"
         isDisabled={

@@ -25,7 +25,7 @@ export const OrderedList = TOrderedList.extend({
         renderHTML(attributes) {
           return (
             attributes.orientation === "vertical" && {
-              style: "display: grid",
+              style: "display: grid; gap: 8px; column-gap: 20px",
               "data-orientation": attributes.orientation,
             }
           );
