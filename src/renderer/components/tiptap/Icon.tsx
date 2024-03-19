@@ -9,7 +9,10 @@ const Bold = () => {
       width="24"
       className="text-inherit fill-inherit"
     >
-      <path d="M272-200v-560h221q65 0 120 40t55 111q0 51-23 78.5T602-491q25 11 55.5 41t30.5 90q0 89-65 124.5T501-200H272Zm121-112h104q48 0 58.5-24.5T566-372q0-11-10.5-35.5T494-432H393v120Zm0-228h93q33 0 48-17t15-38q0-24-17-39t-44-15h-95v109Z" />
+      <path
+        d="M272-200v-560h221q65 0 120 40t55 111q0 51-23 78.5T602-491q25 11 55.5 41t30.5 90q0 89-65 124.5T501-200H272Zm121-112h104q48 0 58.5-24.5T566-372q0-11-10.5-35.5T494-432H393v120Zm0-228h93q33 0 48-17t15-38q0-24-17-39t-44-15h-95v109Z"
+        fill="currentColor"
+      />
     </svg>
   );
 };
@@ -23,7 +26,10 @@ const Italic = () => {
       width="24"
       className="text-inherit fill-inherit"
     >
-      <path d="M200-200v-100h160l120-360H320v-100h400v100H580L460-300h140v100H200Z" />
+      <path
+        d="M200-200v-100h160l120-360H320v-100h400v100H580L460-300h140v100H200Z"
+        fill="currentColor"
+      />
     </svg>
   );
 };
@@ -37,7 +43,10 @@ const Paragraph = () => {
       width="24"
       className="text-inherit fill-inherit"
     >
-      <path d="M360-160v-240q-83 0-141.5-58.5T160-600q0-83 58.5-141.5T360-800h360v80h-80v560h-80v-560H440v560h-80Z" />
+      <path
+        d="M360-160v-240q-83 0-141.5-58.5T160-600q0-83 58.5-141.5T360-800h360v80h-80v560h-80v-560H440v560h-80Z"
+        fill="currentColor"
+      />
     </svg>
   );
 };
@@ -51,7 +60,10 @@ const HorizantalList = () => {
       width="24"
       className="text-inherit fill-inherit"
     >
-      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-507h560v-133H200v133Zm0 214h560v-134H200v134Zm0 213h560v-133H200v133Zm40-454v-80h80v80h-80Zm0 214v-80h80v80h-80Zm0 214v-80h80v80h-80Z" />
+      <path
+        d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-507h560v-133H200v133Zm0 214h560v-134H200v134Zm0 213h560v-133H200v133Zm40-454v-80h80v80h-80Zm0 214v-80h80v80h-80Zm0 214v-80h80v80h-80Z"
+        fill="currentColor"
+      />
     </svg>
   );
 };
@@ -65,7 +77,10 @@ const VerticallList = () => {
       width="24"
       className="text-inherit fill-inherit rotate-90"
     >
-      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-507h560v-133H200v133Zm0 214h560v-134H200v134Zm0 213h560v-133H200v133Zm40-454v-80h80v80h-80Zm0 214v-80h80v80h-80Zm0 214v-80h80v80h-80Z" />
+      <path
+        d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-507h560v-133H200v133Zm0 214h560v-134H200v134Zm0 213h560v-133H200v133Zm40-454v-80h80v80h-80Zm0 214v-80h80v80h-80Zm0 214v-80h80v80h-80Z"
+        fill="currentColor"
+      />
     </svg>
   );
 };
@@ -79,7 +94,10 @@ const Table = () => {
       width="24"
       className="text-inherit fill-inherit"
     >
-      <path d="M120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200Zm80-400h560v-160H200v160Zm213 200h134v-120H413v120Zm0 200h134v-120H413v120ZM200-400h133v-120H200v120Zm427 0h133v-120H627v120ZM200-200h133v-120H200v120Zm427 0h133v-120H627v120Z" />
+      <path
+        d="M120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200Zm80-400h560v-160H200v160Zm213 200h134v-120H413v120Zm0 200h134v-120H413v120ZM200-400h133v-120H200v120Zm427 0h133v-120H627v120ZM200-200h133v-120H200v120Zm427 0h133v-120H627v120Z"
+        fill="currentColor"
+      />
     </svg>
   );
 };
@@ -254,6 +272,40 @@ const DeleteTable = () => {
   );
 };
 
+const TableTopHeader = () => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 1920 1920"
+      xmlns="http://www.w3.org/2000/svg"
+      className="text-inherit fill-inherit"
+    >
+      <path
+        d="m1740 0c99.24 0 180 80.76 180 180v1560c0 99.24-80.76 180-180 180h-1560c-99.24 0-180-80.76-180-180v-1560c0-99.24 80.76-180 180-180zm-420 1200h480v-480h-480zm480 540v-420h-480v480h420c33 0 60-27 60-60zm-1080-540h480v-480h-480zm0 600h480v-480h-480zm-600-600h480v-480h-480zm480 600v-480h-480v420c0 33 27 60 60 60z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+};
+
+const TableLeftHeader = () => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 1920 1920"
+      xmlns="http://www.w3.org/2000/svg"
+      className="text-inherit fill-inherit"
+    >
+      <path
+        d="m1740 0c99.24 0 180 80.76 180 180v1560c0 99.24-80.76 180-180 180h-1560c-99.24 0-180-80.76-180-180v-1560c0-99.24 80.76-180 180-180zm60 1320h-480v480h420c33 0 60-27 60-60zm-600 0h-480v480h480zm600-600h-480v480h480zm-600 0h-480v480h480zm540-600h-420v480h480v-420c0-33-27-60-60-60zm-540 0h-480v480h480z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+};
+
 export {
   Bold,
   Italic,
@@ -270,4 +322,6 @@ export {
   DeleteTable,
   HorizantalList,
   VerticallList,
+  TableTopHeader,
+  TableLeftHeader,
 };

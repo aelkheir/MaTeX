@@ -23,6 +23,8 @@ import {
   RowBefore,
   SmallX,
   Table,
+  TableLeftHeader,
+  TableTopHeader,
   VerticallList,
 } from "./Icon";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
@@ -142,7 +144,7 @@ export const Menu: React.FC<MenuProps> = ({ editor }) => {
       </MenuButton>
       <NumberField
         minValue={2}
-        maxValue={5}
+        maxValue={6}
         step={1}
         aria-label="Number of columns in list"
         isDisabled={
@@ -300,6 +302,20 @@ export const Menu: React.FC<MenuProps> = ({ editor }) => {
       >
         <DeleteTable />
       </MenuButton>
+
+      <MenuButton
+        onPress={() => editor.chain().focus().toggleHeaderRow().run()}
+        isDisabled={!editor.can().toggleHeaderRow()}
+      >
+        <TableTopHeader />
+      </MenuButton>
+
+      <MenuButton
+        onPress={() => editor.chain().focus().toggleHeaderColumn().run()}
+        isDisabled={!editor.can().toggleHeaderColumn()}
+      >
+        <TableLeftHeader />
+      </MenuButton>
     </>
   );
 };
@@ -315,7 +331,7 @@ const MenuButton = ({
       {...props}
       className={`w-8 aspect-square ml-1 flex justify-center items-center text-on-background fill-on-background ${
         isActive ? "bg-primary/[12%]" : ""
-      } disabled:text-outline-variant`}
+      } disabled:text-outline-variant disabled:fill-outline-variant`}
     >
       {children}
     </Button>

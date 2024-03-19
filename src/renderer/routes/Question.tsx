@@ -1,6 +1,6 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { EditorContent, useEditor, generateText } from "@tiptap/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useForm,
   Controller,
@@ -368,23 +368,11 @@ const TipTap = ({
       InlineLatex,
       DisplayLatex,
       Table.configure({
-        HTMLAttributes: {
-          class: "w-full h-auto flex flex-col my-1",
-        },
         allowTableNodeSelection: true,
       }),
-      TableRow.configure({
-        HTMLAttributes: {
-          class: "flex w-full h-auto",
-        },
-      }),
-      TableCell.configure({
-        HTMLAttributes: {
-          class:
-            "w-full relative overflow-hidden pl-4 py-2 flex-col justify-center",
-        },
-      }),
+      TableRow,
       TableHeader,
+      TableCell,
       Bold.configure({
         HTMLAttributes: {
           class: "font-medium",
@@ -428,7 +416,7 @@ const TipTap = ({
 
   return (
     <>
-      <div className="w-full h-12 shrink-0 flex flex-wrap items-center justify-center space-x-1 px-4 bg-black/[1%] p-1">
+      <div className="w-full shrink-0 flex flex-wrap items-center space-x-0.5 px-4 bg-black/[1%] p-1">
         <Menu editor={editor} />
       </div>
       <div className="w-full grow relative overflow-auto flex flex-col">
