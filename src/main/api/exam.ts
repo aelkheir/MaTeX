@@ -33,7 +33,7 @@ const createExam = async (
 const create = (title: string, questions: Promise<Question[]>) => {
   const templatePath = app.isPackaged
     ? path.join(process.resourcesPath, "exam.hbs")
-    : path.join("exam.hbs");
+    : path.join(app.getAppPath(), "resources", "exam.hbs");
   const templateStr = readFileSync(templatePath).toString();
 
   const template = Handlebars.compile(templateStr, {
@@ -90,7 +90,6 @@ const create = (title: string, questions: Promise<Question[]>) => {
 
                 latex.on("exit", (code, signal) => {
                   console.log("exit", code, signal);
-                  console.log("\n\n\n", result);
 
                   if (code === 0) {
                     const pdf = readFileSync(tempDirPath + "/exam.pdf");

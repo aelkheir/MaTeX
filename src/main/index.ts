@@ -12,7 +12,7 @@ if (require("electron-squirrel-startup")) {
 
 const dbPath = app.isPackaged
   ? path.join(process.resourcesPath, "database.db")
-  : path.join("database.db");
+  : path.join(app.getAppPath(), "resources", "database.db");
 
 const AppDataSource = new DataSource({
   type: "sqlite",
@@ -42,7 +42,7 @@ const createWindow = () => {
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  !app.isPackaged && mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
