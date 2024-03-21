@@ -308,6 +308,7 @@ const EditBlocker = ({
         Paragraph,
         OrderedList,
         ListItem,
+        ListItemIntro,
         Table,
         TableRow,
         TableCell,
