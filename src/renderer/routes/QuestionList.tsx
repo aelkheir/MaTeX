@@ -17,7 +17,6 @@ import { Document } from "@tiptap/extension-document";
 import { Text } from "@tiptap/extension-text";
 import { Paragraph } from "@tiptap/extension-paragraph";
 import { History } from "@tiptap/extension-history";
-import { ListItem } from "@tiptap/extension-list-item";
 import { Bold } from "@tiptap/extension-bold";
 import { Italic } from "@tiptap/extension-italic";
 import { Table } from "@tiptap/extension-table";
@@ -44,7 +43,11 @@ import {
 } from "react-aria-components";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { OrderedList } from "../components/tiptap/OrderedList";
+import {
+  ListItem,
+  ListItemIntro,
+  OrderedList,
+} from "../components/tiptap/OrderedList";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -281,12 +284,9 @@ const TipTapNav = ({
             class: "font-normal text-sm ltr:tracking-[0.25px]",
           },
         }),
-        OrderedList.configure({
-          HTMLAttributes: {
-            class: "pl-4",
-          },
-        }),
+        OrderedList,
         ListItem,
+        ListItemIntro,
       ],
       content: JSON.parse(text),
     },

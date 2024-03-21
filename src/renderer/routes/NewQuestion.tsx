@@ -16,7 +16,6 @@ import { Text } from "@tiptap/extension-text";
 import { Paragraph } from "@tiptap/extension-paragraph";
 import { History } from "@tiptap/extension-history";
 import { HardBreak } from "@tiptap/extension-hard-break";
-import { ListItem } from "@tiptap/extension-list-item";
 import { Gapcursor } from "@tiptap/extension-gapcursor";
 import Focus from "@tiptap/extension-focus";
 import { Bold } from "@tiptap/extension-bold";
@@ -33,7 +32,11 @@ import {
 } from "react-hook-form";
 import * as yup from "yup";
 import { DisplayLatex, InlineLatex } from "../components/tiptap/LatexNode";
-import { OrderedList } from "../components/tiptap/OrderedList";
+import {
+  ListItem,
+  ListItemIntro,
+  OrderedList,
+} from "../components/tiptap/OrderedList";
 import {
   Button,
   Dialog,
@@ -102,6 +105,7 @@ const schema = yup.object({
         Paragraph,
         OrderedList,
         ListItem,
+        ListItemIntro,
         Table,
         TableRow,
         TableCell,
@@ -240,17 +244,13 @@ const TipTap = ({
           class: "font-normal text-base",
         },
       }),
-      OrderedList.configure({
-        HTMLAttributes: {
-          // padding when the list the top child of the doc
-          class: "pl-5",
-        },
-      }),
+      OrderedList,
+      ListItem,
+      ListItemIntro,
       Focus.configure({
         className: "ring-[1px] ring-primary",
         mode: "all",
       }),
-      ListItem,
       Gapcursor,
     ],
     content: !content ? "<p></p>" : JSON.parse(content),

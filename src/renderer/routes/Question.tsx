@@ -1,6 +1,6 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { EditorContent, useEditor, generateText } from "@tiptap/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   useForm,
   Controller,
@@ -25,7 +25,6 @@ import { Text } from "@tiptap/extension-text";
 import { HardBreak } from "@tiptap/extension-hard-break";
 import { Paragraph } from "@tiptap/extension-paragraph";
 import { History } from "@tiptap/extension-history";
-import { ListItem } from "@tiptap/extension-list-item";
 import Focus from "@tiptap/extension-focus";
 import { Gapcursor } from "@tiptap/extension-gapcursor";
 import { Bold } from "@tiptap/extension-bold";
@@ -49,7 +48,11 @@ import {
   TextField,
 } from "react-aria-components";
 import { LabelLarge } from "../components/text/LabelLarge";
-import { OrderedList } from "../components/tiptap/OrderedList";
+import {
+  ListItem,
+  ListItemIntro,
+  OrderedList,
+} from "../components/tiptap/OrderedList";
 import { Menu } from "../components/tiptap/Menu";
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -121,6 +124,7 @@ const schema = yup.object({
         Paragraph,
         OrderedList,
         ListItem,
+        ListItemIntro,
         Table,
         TableRow,
         TableCell,
@@ -388,17 +392,13 @@ const TipTap = ({
           class: "font-normal text-base",
         },
       }),
-      OrderedList.configure({
-        HTMLAttributes: {
-          // padding when the list the top child of the doc
-          class: "pl-5",
-        },
-      }),
+      OrderedList,
+      ListItem,
+      ListItemIntro,
       Focus.configure({
         className: "ring-[1px] ring-primary",
         mode: "all",
       }),
-      ListItem,
       Gapcursor,
     ],
     content: !content ? "<p></p>" : JSON.parse(content),

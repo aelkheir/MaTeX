@@ -10,7 +10,6 @@ import {
   useParams,
 } from "react-router-dom";
 import { TableCell as TipTapTableCell } from "@tiptap/extension-table-cell";
-import { ListItem } from "@tiptap/extension-list-item";
 import { Bold } from "@tiptap/extension-bold";
 import { Italic } from "@tiptap/extension-italic";
 import { OrderedList } from "@tiptap/extension-ordered-list";
@@ -45,6 +44,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { pdfjs, Document, Page } from "react-pdf";
 import { DocumentCallback } from "react-pdf/dist/cjs/shared/types";
+import { ListItem, ListItemIntro } from "../components/tiptap/OrderedList";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const questions = await window.electron.fetchCourseQuestions(
@@ -526,12 +526,9 @@ const TipTapQuestion = ({
           class: "font-normal text-inherit ltr:tracking-[0.25px]",
         },
       }),
-      OrderedList.configure({
-        HTMLAttributes: {
-          class: "pl-4",
-        },
-      }),
+      OrderedList,
       ListItem,
+      ListItemIntro,
     ],
     content: JSON.parse(text),
   });

@@ -9,15 +9,20 @@ const parseDocNode = (doc: JSONContent) => {
   let content = "";
   doc.content?.forEach((node, index, arr) => {
     const newLine = index !== arr.length - 1 ? "\n" : "";
-    content += `${parseNode(node, arr[index + 1])}${newLine}`;
+    content += `${parseNode(node, { rightSibling: arr[index + 1] })}${newLine}`;
   });
   return `\\question ${content}`;
 };
 
-const parseNode = (node: JSONContent, rightSibling?: JSONContent) => {
+type Options = {
+  rightSibling?: JSONContent;
+  partLevel?: 0 | 1;
+};
+
+const parseNode = (node: JSONContent, options: Options = {}) => {
   switch (node.type) {
     case "paragraph":
-      return parseParagraph(node, rightSibling);
+      return parseParagraph(node, options);
 
     case "inlineLatex":
       return parseInlineLatex(node);
@@ -26,10 +31,10 @@ const parseNode = (node: JSONContent, rightSibling?: JSONContent) => {
       return parseDisplayLatex(node);
 
     case "orderedList":
-      return parseOrderdList(node);
+      return parseOrderdList(node, options);
 
     case "listItem":
-      return parseListItem(node);
+      return parseListItem(node, options);
 
     case "text":
       return node.text;
@@ -39,14 +44,14 @@ const parseNode = (node: JSONContent, rightSibling?: JSONContent) => {
   }
 };
 
-const parseParagraph = (paragraph: JSONContent, rightSibling?: JSONContent) => {
+const parseParagraph = (paragraph: JSONContent, options: Options = {}) => {
   let content = "";
   paragraph.content?.forEach((node, index, arr) => {
     const insertSpace = index !== arr.length - 1 ? " " : "";
     content += `${parseNode(node)}${insertSpace}`;
   });
   if (!content.trim()) return "";
-  const endLine = rightSibling?.type === "paragraph" ? "\n" : "";
+  const endLine = options?.rightSibling?.type === "paragraph" ? "\n" : "";
   return `${content}${endLine}`;
 };
 
@@ -66,11 +71,11 @@ const parseDisplayLatex = (DisplayLatexNode: JSONContent) => {
   }
 };
 
-const parseOrderdList = (orderListNode: JSONContent) => {
+const parseOrderdList = (orderListNode: JSONContent, options: Options = {}) => {
   let content = "";
   orderListNode.content?.forEach((node, index, arr) => {
     const newLine = index !== arr.length - 1 ? "\n" : "";
-    content += `  ${parseNode(node)}${newLine}`;
+    content += `  ${parseNode(node, { ...options })}${newLine}`;
   });
   if (!content.trim()) return "";
   const isVertical = orderListNode.attrs?.orientation === "vertical";
@@ -81,16 +86,34 @@ const parseOrderdList = (orderListNode: JSONContent) => {
       `${content}` +
       "\n\\end{multicols}";
   }
+  const template =
+    options?.partLevel === 0 || !options.partLevel
+      ? "\\begin{parts}\n{0}\n\\end{parts}"
+      : "\\begin{subparts}\n{0}\n\\end{subparts}";
 
-  return `\\begin{parts}\n${isVertical ? layout : content}\n\\end{parts}`;
+  return template.replace("{0}", isVertical ? layout : content);
 };
 
-const parseListItem = (listItemNode: JSONContent) => {
+const parseListItem = (listItemNode: JSONContent, options: Options = {}) => {
   let content = "";
+  let uplevel = "";
   listItemNode.content?.forEach((node, index, arr) => {
+    if (node.type === "listItemIntro" && index == 0) {
+      uplevel = parseParagraph(node);
+    }
     const newLine = index !== arr.length - 1 ? "\n" : "";
-    content += `${parseNode(node, arr[index + 1])}${newLine}`;
+    content += `${parseNode(node, {
+      rightSibling: arr[index + 1],
+      partLevel: 1,
+    })}${newLine}`;
   });
+
   if (!content.trim()) return "";
-  return `\\part ${content}`;
+
+  const part =
+    options?.partLevel === 0 || !options.partLevel
+      ? `\\part ${content}`
+      : `\\subpart ${content}`;
+
+  return (uplevel ? `\\uplevel{${uplevel}}\n` : "") + part;
 };
