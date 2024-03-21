@@ -91,7 +91,7 @@ export const ListItemIntro = Node.create({
           const { $from } = selection;
           const listItem = state.schema.nodes.listItem;
           const paragraph = state.schema.nodes.paragraph;
-          const introParagraph = state.schema.nodes.introParagraph;
+          const listItemIntro = state.schema.nodes.listItemIntro;
           const pos = $from.before($from.depth);
 
           // Check if the current position is within a listItem
@@ -111,7 +111,7 @@ export const ListItemIntro = Node.create({
 
           const currentType = $from.node($from.depth).type;
           const targetType =
-            currentType === paragraph ? introParagraph : paragraph;
+            currentType === paragraph ? listItemIntro : paragraph;
 
           // Attempt to set node type, ensuring it's within a listItem
           tr.setNodeMarkup(pos, targetType);
